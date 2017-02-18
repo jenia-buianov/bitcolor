@@ -1,0 +1,25 @@
+{
+    "name": "bitw/larulogin",
+    "description": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "bitw",
+            "email": "endval@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.*"
+    },
+    "autoload": {
+        "classmap":[
+            "src/controllers",
+            "src/models"
+        ],
+        "psr-0": {
+            "Bitw\\Larulogin": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}

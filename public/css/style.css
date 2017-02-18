@@ -1,0 +1,60 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: table;
+    font-weight: 100;
+    font-family: 'Lato';
+}
+
+.container {
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.content {
+    text-align: center;
+    display: inline-block;
+}
+
+.title {
+    font-size: 96px;
+}
+
+div#tenant{
+    float:left;
+    background-color: rgba(255, 72, 54, 0.10);
+    height:40%;
+    width: 35%;
+    margin-left: 15%;
+}
+.type-select p {
+    font-size: 20px;
+    margin-top: 15%;
+}
+
+div#owner{
+    display:inline-block;
+    background-color: rgba(128, 255, 224, 0.22);
+    height:40%;
+    width: 35%;
+    margin-right:15%;
+}
+
+.owner-reg{
+    float:left;
+    display:inline;
+    background-color: rgba(255, 253, 37, 0.22);
+    height:30%;
+    width: 20%;
+    }
+
+
+.owner-reg p{
+    font-size: 24px;
+}
