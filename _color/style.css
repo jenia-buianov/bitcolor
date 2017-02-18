@@ -1,0 +1,67 @@
+.container{
+    position:relative;
+    left:40%;
+    /*border:1px solid greenyellow;*/
+}
+.color {
+    height: 170px;
+    width: 170px;
+    border-radius: 75px;
+    border: none;
+    /*background-color: #e6ff81;*/
+}
+.color:hover{
+    cursor:pointer;
+}
+#red{
+    background-color: #ff6857;
+    position:absolute;
+    top:0px;
+    left:0px;
+}
+#orange{
+    background-color: #FFB153;
+    position:absolute;
+    top:90px;
+    left:140px;
+}
+#yellow{
+    background-color: #ffdf0e;
+    position:absolute;
+    top:235px;
+    left:220px;
+}
+#green{
+    background-color: #97CC1B;
+    position:absolute;
+    top:380px;
+    left:140px;
+}
+#azure{
+    background-color: #1AD0FF;
+    position:absolute;
+    top:475px;
+    left:0px;
+}
+#blue{
+    background-color: #0080FF;
+    position:absolute;
+    top:380px;
+    left:-140px;
+}
+
+
+#purple{
+    background-color: #8000FF;
+    position:absolute;
+    top:235px;
+    left:-220px;
+}
+#custom{
+    background:url(leprecon.jpg) 50% 50% no-repeat;
+    position:absolute;
+    top:90px;
+    left:-140px;
+    border: 1px solid grey;
+    z-index: -1;
+}

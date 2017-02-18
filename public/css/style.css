@@ -1,60 +1,82 @@
-html, body {
-    height: 100%;
+#header{background-color: rgba(255, 224, 73, 0.5);
+
+}
+#header a{color: #34403d;}
+/*#header{background-color: rgb(255, 106, 95);  } #header a{color: rgb(255, 255, 255);}*/
+.box{
+    position:relative;
+
+    /*border:1px solid #ffff00;*/
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    display: table;
-    font-weight: 100;
-    font-family: 'Lato';
+
+#container{
+    /*border: 1px solid red;*/
+    margin-left:220px;
+}
+.color {
+    height: 170px;
+    width: 170px;
+    border-radius: 75px;
+    border: none;
+    /*background-color: #e6ff81;*/
+}
+.color:hover{
+    cursor:pointer;
+}
+#red{
+    background-color: #ff6857;
+    position:absolute;
+    margin-top:0px;
+    margin-left:0px;
+}
+#orange{
+    background-color: #FFB153;
+    position:absolute;
+    margin-top:90px;
+    margin-left:140px;
+}
+#yellow{
+    background-color: #ffdf0e;
+    position:absolute;
+    margin-top:235px;
+    margin-left:220px;
+}
+#green{
+    background-color: #97CC1B;
+    position:absolute;
+    margin-top:380px;
+    margin-left:140px;
+}
+#azure{
+    background-color: #1AD0FF;
+    position:absolute;
+    margin-top:475px;
+    margin-left:0px;
+}
+#blue{
+    background-color: #0080FF;
+    position:absolute;
+    margin-top:380px;
+    margin-left:-140px;
 }
 
-.container {
-    text-align: center;
-    display: table-cell;
-    vertical-align: middle;
+
+#purple{
+    background-color: #8000FF;
+    position:absolute;
+    margin-top:235px;
+    margin-left:-220px;
+}
+#custom{
+    background:url(/images/leprecon.jpg) 50% 50% no-repeat;
+    position:absolute;
+    margin-top:90px;
+    margin-left:-140px;
+    border: 1px solid grey;
+    z-index: -1;
 }
 
-.content {
-    text-align: center;
-    display: inline-block;
-}
-
-.title {
-    font-size: 96px;
-}
-
-div#tenant{
-    float:left;
-    background-color: rgba(255, 72, 54, 0.10);
-    height:40%;
-    width: 35%;
-    margin-left: 15%;
-}
-.type-select p {
-    font-size: 20px;
-    margin-top: 15%;
-}
-
-div#owner{
-    display:inline-block;
-    background-color: rgba(128, 255, 224, 0.22);
-    height:40%;
-    width: 35%;
-    margin-right:15%;
-}
-
-.owner-reg{
-    float:left;
-    display:inline;
-    background-color: rgba(255, 253, 37, 0.22);
-    height:30%;
-    width: 20%;
-    }
-
-
-.owner-reg p{
-    font-size: 24px;
-}
+/*Current Bets*/
+#bets th,td{
+border:1px solid #cbcdd6;padding:5px;}

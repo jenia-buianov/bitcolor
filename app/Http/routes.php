@@ -10,11 +10,48 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+//use App\Game;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-/*Route::get('/', function () {
+Route::get('/', function () {
     return view('welcome');
-});*/
-//Route::get('/', ['as'=>'posts','uses'=>'PostController@index']);
-Route::get('/', ['as'=>'mainpage','uses'=>'MainpageController@index']);
-Route::get('/owner', ['as'=>'owner','uses'=>'OwnerController@index']);
-Route::get('/tenant', ['as'=>'tenant','uses'=>'TenantController@index']);
+});
+
+
+//Route::auth();
+Route::get('login', 'Auth\AuthController@showLoginForm');
+Route::post('login', 'Auth\AuthController@login');
+Route::get('logout', 'Auth\AuthController@logout');
+
+// Registration Routes...
+Route::get('register', 'Auth\AuthController@showRegistrationForm');
+Route::post('register', 'Auth\AuthController@register');
+
+// Password Reset Routes...
+Route::get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
+Route::post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
+Route::post('password/reset', 'Auth\PasswordController@reset');
+
+
+//Route::get('/home', 'HomeController@index');
+
+Route::get('game','GameController@listBets');
+Route::post('game', 'GameController@bet');
+//Route::match(['get', 'post'], '/game/{bet}', 'GameController@bet');
+
+// Route::post('/game', 'GameController@bet');
+
+    /*$validator = Validator::make($request->all(), [
+        'players' => 'required|max:255',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect('/')
+            ->withInput()
+            ->withErrors($validator);
+    }*/
+
+
+
+
