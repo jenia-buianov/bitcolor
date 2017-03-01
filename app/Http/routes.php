@@ -12,28 +12,16 @@
 */
 //use App\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+   if(Auth::user()) return redirect('game');
+    else return view('welcome');
 });
 
 
-//Route::auth();
-Route::get('login', 'Auth\AuthController@showLoginForm');
-Route::post('login', 'Auth\AuthController@login');
-Route::get('logout', 'Auth\AuthController@logout');
-
-// Registration Routes...
-Route::get('register', 'Auth\AuthController@showRegistrationForm');
-Route::post('register', 'Auth\AuthController@register');
-
-// Password Reset Routes...
-Route::get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
-Route::post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
-Route::post('password/reset', 'Auth\PasswordController@reset');
-
-
+Route::auth();
 //Route::get('/home', 'HomeController@index');
 
 Route::get('game','GameController@listBets');

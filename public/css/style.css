@@ -9,7 +9,18 @@
     /*border:1px solid #ffff00;*/
 }
 
-
+body{
+    font-family: 'Roboto Medium';
+    font-weight: 400;
+    font-size:1.5em;
+}
+.unreg{
+    background-image: url('../images/background.jpg');
+    background-size: cover;
+}
+.unreg .container{
+    margin-top:5em;
+}
 #container{
     /*border: 1px solid red;*/
     margin-left:220px;
@@ -80,3 +91,25 @@
 /*Current Bets*/
 #bets th,td{
 border:1px solid #cbcdd6;padding:5px;}
+
+.unreg #myTabContent .tab-pane, .unreg #myTabContent .tab-pane label{
+    background-color: #2c3e50;
+    color:white;
+    padding:15px;
+    font-weight: 300;
+}
+
+.unreg #myTabs li a{
+    color:white;
+    background-color: #18bc9c;
+}
+
+.unreg #myTabs .active a{
+    color:#18bc9c;
+    background-color: white;
+}
+
+.unreg #myTabContent .tab-pane{
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
