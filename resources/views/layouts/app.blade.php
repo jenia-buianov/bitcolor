@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 	<link href="{{ asset('css/style.css') }}" rel="stylesheet">
+	<link href="{{ asset('css/animate.css') }}" rel="stylesheet">
+	<link href="{{ asset('css/notifications.css') }}" rel="stylesheet">
 	{{-- <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> --}}
 
     <style>
@@ -27,8 +29,8 @@
         }
     </style>
 </head>
-<body id="app-layout">
-    <nav class="navbar navbar-default navbar-static-top"  id="header">
+<body>
+    <nav class="navbar navbar-default navbar-static-top">
         <div class="container">
             <div class="navbar-header">
 
@@ -42,7 +44,7 @@
 
                 <!-- Branding Image -->
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    Home
+                    BitColor
                 </a>
 
             </div>
@@ -54,17 +56,9 @@
                 </ul>--}}
 
                 <ul class="nav navbar-nav">
-                    @if (Auth::guest())
-                    <li><a  href="{{ url('/login') }}">
-                            Game
-                        </a>
-                    </li>
-                    @else
-                        <li><a  href="{{ url('/game') }}">
-                                Game
-                            </a>
-                        </li>
-                    @endif
+                    <li><a  href="{{ url('/game') }}">Game</a></li>
+                    <li><a  href="{{ url('/statistic') }}">Statistic</a></li>
+
                 </ul>
 
                 <!-- Right Side Of Navbar -->
@@ -74,6 +68,7 @@
                         <li><a href="{{ url('/login') }}">Login</a></li>
                         <li><a href="{{ url('/register') }}">Register</a></li>
                     @else
+                        <li id="my_balance">0.0000000000 <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>
@@ -92,8 +87,12 @@
     @yield('content')
 
     <!-- JavaScripts -->
+    <script>
+        var HOME_URL = '{{url("/")}}';
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="{{asset('js/core.js')}}"></script>
     {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>

@@ -49,14 +49,25 @@ class GameController extends Controller
                         'email' => $email]);*/
     public function listBets(){
         if(Auth::check()) {
-            $email = Auth::user()->email;
-            $bets = Bet::where('game_id', 1)->take(10)->get();
 
-//        $bets = Bet::all()->where('game_id', 1)->take(5);
         return view('colors')
-            ->with(['bets'=> $bets, 'email'=>$email]);
+            ->with(['currGames'=> Bet::getCurrentGames(),'myActive'=> Bet::getMyActiveGames(Auth::user()->id),'myStatistic'=>Bet::getStatistic(Auth::user()->id),'myPlayedGames'=>Bet::getMyPlayedGames(Auth::user()->id),'top'=>Bet::getPlaceInTop(Auth::user()->id)]);
         }
         else{return redirect('/');}
+    }
+
+    public function observer(){
+        if(Auth::check()) {
+            $response['currGames'] = array('type'=>'#','value'=>Bet::getCurrentGames(),'action'=>'set','effect'=>'','equal'=>false);
+            $response['myActive'] = array('type'=>'#','value'=>Bet::getMyActiveGames(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
+            $response['myStatistic'] = array('type'=>'#','value'=>Bet::getStatistic(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
+            $response['myPlayedGames'] = array('type'=>'#','value'=>Bet::getMyPlayedGames(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
+            $response['placeTop'] = array('type'=>'#','value'=>Bet::getPlaceInTop(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
+            $response['my_balance'] = array('type'=>'#','value'=>Bet::getMyBalance(Auth::user()->id).' <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i>','action'=>'set','effect'=>'bounceIn','equal'=>true);
+           // $response['not'] = array('type'=>'notification','notif'=>array('type'=>'warning','text'=>'HERE is Text','title'=>'title','icon'=>'btc'));
+            echo json_encode($response);
+            exit;
+        }
     }
 }
 /* Route::post('/task', function (Request $request) {

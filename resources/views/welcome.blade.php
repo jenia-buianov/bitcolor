@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-6 col-md-offset-3">
             <ul class="nav nav-tabs" id="myTabs" role="tablist">
                 <li role="presentation" class="active"><a href="#register" id="register-tab" role="tab" data-toggle="tab" aria-controls="register" aria-expanded="true">Registration</a></li>
                 <li role="presentation"><a href="#log" id="register-tab" role="tab" data-toggle="tab" aria-controls="log" aria-expanded="true">Sing in</a></li>
