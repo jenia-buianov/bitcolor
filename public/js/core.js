@@ -45,7 +45,7 @@ function Send(el) {
 $(document).ready(function() {
 	$('a').click(function() {
 		var url = $(this).attr('href');
-		if (url=='#') return false;
+		if (url=='#'||$(this).attr('data-toggle')=='dropdown') return true;
 		NProgress.start();
 		$.ajax({
 			url:     url,

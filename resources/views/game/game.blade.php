@@ -14,9 +14,9 @@
             <thead>
                 <tr>
                     <th>Game</th>
-                    <th style="text-align: center">Players</th>
-                    <th style="text-align: center">Time left</th>
-                    <th style="text-align: right">Bank</th>
+                    <th style="text-align: center">{{translate('players')}}</th>
+                    <th style="text-align: center">{{translate('t_left')}}</th>
+                    <th style="text-align: right">{{translate('bank')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,5 +37,5 @@
         </table>
     </div>
 <?php } else {?>
-    <div class="center">No active games</div>
+    <div class="center">{{translate('no_games')}}</div>
 <?php }?>

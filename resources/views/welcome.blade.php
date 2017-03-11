@@ -5,8 +5,8 @@
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <ul class="nav nav-tabs" id="myTabs" role="tablist">
-                <li role="presentation" class="active"><a href="#register" id="register-tab" role="tab" data-toggle="tab" aria-controls="register" aria-expanded="true">Registration</a></li>
-                <li role="presentation"><a href="#log" id="register-tab" role="tab" data-toggle="tab" aria-controls="log" aria-expanded="true">Sing in</a></li>
+                <li role="presentation" class="active"><a href="#register" id="register-tab" role="tab" data-toggle="tab" aria-controls="register" aria-expanded="true">{{translate('registration')}}</a></li>
+                <li role="presentation"><a href="#log" id="register-tab" role="tab" data-toggle="tab" aria-controls="log" aria-expanded="true">{{translate('sing_in')}}</a></li>
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade active in" role="tabpanel" id="register" aria-labelledby="register-tab">
@@ -14,7 +14,7 @@
                         {{ csrf_field() }}
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">Name</label>
+                            <label for="name" class="col-md-4 control-label">{{translate('name')}}</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}">
@@ -28,7 +28,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
+                            <label for="email" class="col-md-4 control-label">{{translate('email')}}</label>
 
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}">
@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Password</label>
+                            <label for="password" class="col-md-4 control-label">{{translate('password')}}</label>
 
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control" name="password">
@@ -56,7 +56,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                            <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
+                            <label for="password-confirm" class="col-md-4 control-label">{{translate('confirm_pass')}}</label>
 
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation">
@@ -72,7 +72,7 @@
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fa fa-btn fa-user"></i> Register
+                                    <i class="fa fa-btn fa-user"></i> {{translate('register')}}
                                 </button>
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                         {{ csrf_field() }}
 
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
+                            <label for="email" class="col-md-4 control-label">{{translate('email')}}</label>
 
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}">
@@ -97,7 +97,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Password</label>
+                            <label for="password" class="col-md-4 control-label">{{translate('password')}}</label>
 
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control" name="password">
@@ -114,7 +114,7 @@
                             <div class="col-md-6 col-md-offset-4">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="remember"> Remember Me
+                                        <input type="checkbox" name="remember"> {{translate('remember')}}
                                     </label>
                                 </div>
                             </div>
@@ -123,10 +123,10 @@
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fa fa-btn fa-sign-in"></i> Login
+                                    <i class="fa fa-btn fa-sign-in"></i> {{translate('login')}}
                                 </button>
 
-                                <a class="btn btn-link" href="{{ url('/password/reset') }}">Forgot Your Password?</a>
+                                <a class="btn btn-link" href="{{ url('/password/reset') }}">{{translate('forgot')}}</a>
                             </div>
                         </div>
                     </form>

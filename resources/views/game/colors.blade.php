@@ -10,23 +10,23 @@
                     <div class="list-group">
                         <a href="{{url('/game')}}" class="list-group-item active">
                             <span class="badge" id="currGames">{{$currGames}}</span>
-                            Games
+                            {{translate('games')}}
                         </a>
                         <a href="{{url('/game/active')}}" class="list-group-item">
                             <span class="badge" id="myActive">{{$myActive}}</span>
-                            My active games
+                            {{translate('my_active')}}
                         </a>
                         <a href="{{url('/statistic')}}" class="list-group-item">
                             <span class="badge" id="myStatistic">{{$myStatistic}}</span>
-                            Success
+                            {{translate('success')}}
                         </a>
                         <a href="{{url('/statistic/history')}}" class="list-group-item">
                             <span class="badge" id="myPlayedGames">{{$myPlayedGames}}</span>
-                            I played
+                            {{translate('played')}}
                         </a>
                         <a href="{{url('/statistic/top')}}" class="list-group-item">
                             <span class="badge" id="placeTop">{{$top}}</span>
-                            Place in top
+                            {{translate('top')}}
                         </a>
                     </div>
                 </div>

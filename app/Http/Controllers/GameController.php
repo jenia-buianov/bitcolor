@@ -49,7 +49,6 @@ class GameController extends Controller
                         'email' => $email]);*/
     public function listBets(){
         if(Auth::check()) {
-
             Bet::unsetFinishedGames();
         return view('game.colors')
             ->with(['timePerGame'=>(20*60),'games'=>Bet::listAllGames(), 'balance'=>Bet::getMyBalance(Auth::user()->id),'currGames'=> Bet::getCurrentGames(),'myActive'=> Bet::getMyActiveGames(Auth::user()->id),'myStatistic'=>Bet::getStatistic(Auth::user()->id),'myPlayedGames'=>Bet::getMyPlayedGames(Auth::user()->id),'top'=>Bet::getPlaceInTop(Auth::user()->id)]);

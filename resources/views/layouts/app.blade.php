@@ -24,7 +24,6 @@
         var HOME_URL = '{{url("/")}}';
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="{{asset('js/nprogress.js')}}"></script>
     <script src="{{asset('js/core.js')}}"></script>
 
@@ -65,8 +64,8 @@
                 </ul>--}}
 
                 <ul class="nav navbar-nav">
-                    <li><a  href="{{ url('/game') }}">Game</a></li>
-                    <li><a  href="{{ url('/statistic') }}">Statistic</a></li>
+                    <li><a  href="{{ url('/game') }}">{{translate('game')}}</a></li>
+                    <li><a  href="{{ url('/statistic') }}">{{translate('statistic')}}</a></li>
 
                 </ul>
 
@@ -74,8 +73,8 @@
                 <ul class="nav navbar-nav navbar-right">
                     <!-- Authentication Links -->
                     @if (Auth::guest())
-                        <li><a href="{{ url('/login') }}">Login</a></li>
-                        <li><a href="{{ url('/register') }}">Register</a></li>
+                        <li><a href="{{ url('/login') }}">{{translate('login')}}</a></li>
+                        <li><a href="{{ url('/register') }}">{{translate('register')}}</a></li>
                     @else
                         <li id="my_balance">{{$balance}} <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i></li>
                         <li class="dropdown">
@@ -84,7 +83,7 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+                                <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>{{translate('logout')}}</a></li>
                             </ul>
                         </li>
                     @endif
@@ -95,6 +94,8 @@
 
     @yield('content')
     <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
     {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>
