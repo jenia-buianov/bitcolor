@@ -47,7 +47,9 @@ class Bet extends Model
 
     public static function listAllGames(){
         return DB::table('games')->select("id", "timeStart as time", DB::raw("(SELECT COUNT(DISTINCT bets.userId) FROM `bets` WHERE bets.game_id=games.id) as players"), DB::raw("(SELECT SUM(bets.amount) FROM `bets` WHERE bets.game_id=games.id) as money"))->where([['isActive','=',1]])->get();
-
     }
 
+    public static function listMyActiveGames($userId){
+        return DB::table('games')->select("games.id", "timeStart as time", DB::raw("(SELECT COUNT(DISTINCT bets.userId) FROM `bets` WHERE bets.game_id=games.id) as players"), DB::raw("(SELECT SUM(bets.amount) FROM `bets` WHERE bets.game_id=games.id) as money"))->leftJoin('bets', 'games.id', '=', 'bets.game_id')->where([['games.isActive','=',1],['bets.userId','=',$userId]])->groupBy('bets.game_id')->get();
+    }
 }

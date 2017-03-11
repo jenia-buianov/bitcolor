@@ -45,7 +45,11 @@ function Send(el) {
 $(document).ready(function() {
 	$('a').click(function() {
 		var url = $(this).attr('href');
-		if (url=='#'||$(this).attr('data-toggle')=='dropdown') return true;
+		if (url=='#'||$(this).attr('data-toggle')=='dropdown'||$(this).attr('data-toggle')=='logout') return true;
+		if ($(this).hasClass('list-group-item')){
+			$('a.active').removeClass('active');
+			$(this).addClass('active');
+		}
 		NProgress.start();
 		$.ajax({
 			url:     url,
@@ -118,6 +122,7 @@ function setLeftGameTimer(game,time){
 function setHTML(el,id){
 	var val = $(el.type+id).html();
 	$(el.type+id).html(el.value);
+	if (typeof el.css !== 'undefined')	$(el.type+id).css(el.css);
 	if (el.effect!=='') {
 		if(!el.equal) $(el.type+id).animateCss(el.effect);
 		if(el.equal&&(val!==$(el.type+id).html())) $(el.type+id).animateCss(el.effect);

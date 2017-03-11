@@ -79,11 +79,25 @@
                         <li id="my_balance">{{$balance}} <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <i class="fa fa-bell-o" aria-hidden="true"></i><span class="badge notif_count"@if($countNotif==0) style="display:none" @endif>{{$countNotif}}</span>
+                            </a>
+
+                            <ul class="dropdown-menu notif_top" role="menu">
+                                <?php if (count($listNotif)>0){?>
+                                    @foreach ($listNotif as $k=>$v)
+                                    <li><a href="@if($v->modal==1){{$v->link}}@else#@endif">@if($v->textKey==1){{translate($v->text)}}@elseif($v->lang==lang()) {{$v->text}} @endif</a></li>
+                                    @endforeach
+                                <?php }?>
+                                <li><a href="{{ url('/logout') }}" data-toggle="logout"><i class="fa fa-btn fa-sign-out"></i>{{translate('logout')}}</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>{{translate('logout')}}</a></li>
+                                <li><a href="{{ url('/logout') }}" data-toggle="logout"><i class="fa fa-btn fa-sign-out"></i>{{translate('logout')}}</a></li>
                             </ul>
                         </li>
                     @endif
