@@ -17,7 +17,16 @@
 	<link href="{{ asset('css/style.css') }}" rel="stylesheet">
 	<link href="{{ asset('css/animate.css') }}" rel="stylesheet">
 	<link href="{{ asset('css/notifications.css') }}" rel="stylesheet">
+	<link href="{{ asset('css/nprogress.css') }}" rel="stylesheet">
 	{{-- <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> --}}
+<!-- JavaScripts -->
+    <script>
+        var HOME_URL = '{{url("/")}}';
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="{{asset('js/nprogress.js')}}"></script>
+    <script src="{{asset('js/core.js')}}"></script>
 
     <style>
         body {
@@ -68,7 +77,7 @@
                         <li><a href="{{ url('/login') }}">Login</a></li>
                         <li><a href="{{ url('/register') }}">Register</a></li>
                     @else
-                        <li id="my_balance">0.0000000000 <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i></li>
+                        <li id="my_balance">{{$balance}} <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>
@@ -85,14 +94,7 @@
     </nav>
 
     @yield('content')
-
-    <!-- JavaScripts -->
-    <script>
-        var HOME_URL = '{{url("/")}}';
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script src="{{asset('js/core.js')}}"></script>
+    <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}">
     {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>

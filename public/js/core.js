@@ -42,6 +42,42 @@ function Send(el) {
 	return false;
 }
 
+$(document).ready(function() {
+	$('a').click(function() {
+		var url = $(this).attr('href');
+		if (url=='#') return false;
+		NProgress.start();
+		$.ajax({
+			url:     url,
+			data:     {modal:1,_token:$('#_token').val()},
+			method:     'POST',
+			success: function(data){
+				$('#mainContent').html(data);
+				NProgress.done();
+			}
+		});
+
+		if(url != window.location){
+			window.history.pushState(null, null, url);
+		}
+
+		return false;
+	});
+
+	$(window).bind('popstate', function() {
+		NProgress.start();
+		$.ajax({
+			url:     location.pathname,
+			data:     {modal:1,_token:$('#_token').val()},
+			method:     'POST',
+			success: function(data) {
+				NProgress.done();
+				$('#mainContent').html(data);
+			}
+		});
+	});
+});
+
 $.fn.extend({
 	animateCss: function (animationName) {
 		var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -50,6 +86,34 @@ $.fn.extend({
 		});
 	}
 });
+
+function preloader(){
+	NProgress.start();
+	$('body').append('<preloader></preloader>');
+}
+Date.prototype.addTime = function(h) {
+	this.setTime(this.getTime() + (h*1000));
+	return this;
+};
+
+function timer(game,finish)
+{
+	time = parseInt((finish - new Date)/1000);
+	if (time<=0) {
+		$('#game_'+game).remove();
+		clearInterval(Timeouts[game]);
+		Timeouts[game] = 0;
+	}
+	minutes = parseInt(time/60);
+	sec = time - minutes*60;
+	if (sec<10) sec='0'+sec;
+	$('#game_'+game+' font').html(minutes+':'+sec);
+}
+function setLeftGameTimer(game,time){
+
+	finish = new Date().addTime(time);
+	Timeouts[game] = setInterval(timer,1000,game,finish);
+}
 
 function setHTML(el,id){
 	var val = $(el.type+id).html();
@@ -85,9 +149,9 @@ function showNotification(el){
 function myObserver(){
 	$.ajax({
 		dataType: "json",
-		url: HOME_URL+'/observer/',
-		data: {'modal':1},
-		method: 'post',
+		url:     HOME_URL+'/observer',
+		data:     {modal:1,_token:$('#_token').val()},
+		method:     'POST',
 		success: function (data) {
 			//console.log(data);
 			$.each(data, function(i, val) {
@@ -102,5 +166,7 @@ function myObserver(){
 }
 
 $(document).ready(function (){
+	NProgress.done();
+	$('preloader').remove();
 	var myObs = setInterval(myObserver,1000);
 });

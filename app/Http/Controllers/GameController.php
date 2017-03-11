@@ -50,14 +50,22 @@ class GameController extends Controller
     public function listBets(){
         if(Auth::check()) {
 
-        return view('colors')
-            ->with(['currGames'=> Bet::getCurrentGames(),'myActive'=> Bet::getMyActiveGames(Auth::user()->id),'myStatistic'=>Bet::getStatistic(Auth::user()->id),'myPlayedGames'=>Bet::getMyPlayedGames(Auth::user()->id),'top'=>Bet::getPlaceInTop(Auth::user()->id)]);
+            Bet::unsetFinishedGames();
+        return view('game.colors')
+            ->with(['timePerGame'=>(20*60),'games'=>Bet::listAllGames(), 'balance'=>Bet::getMyBalance(Auth::user()->id),'currGames'=> Bet::getCurrentGames(),'myActive'=> Bet::getMyActiveGames(Auth::user()->id),'myStatistic'=>Bet::getStatistic(Auth::user()->id),'myPlayedGames'=>Bet::getMyPlayedGames(Auth::user()->id),'top'=>Bet::getPlaceInTop(Auth::user()->id)]);
         }
         else{return redirect('/');}
     }
 
-    public function observer(){
-        if(Auth::check()) {
+    public function listGames(Request $request){
+        if(Auth::check() and $request->isMethod('post') and (int)$request->input('modal')==1) {
+            Bet::unsetFinishedGames();
+            return view('game.game')->with(['games'=>Bet::listAllGames(),'timePerGame'=>(20*60)]);
+        }
+    }
+
+    public function observer(Request $request){
+        if(Auth::check()and $request->isMethod('post') and (int)$request->input('modal')==1) {
             $response['currGames'] = array('type'=>'#','value'=>Bet::getCurrentGames(),'action'=>'set','effect'=>'','equal'=>false);
             $response['myActive'] = array('type'=>'#','value'=>Bet::getMyActiveGames(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
             $response['myStatistic'] = array('type'=>'#','value'=>Bet::getStatistic(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);

@@ -25,8 +25,12 @@ Route::auth();
 //Route::get('/home', 'HomeController@index');
 
 Route::get('game','GameController@listBets');
+Route::post('game','GameController@listGames');
 Route::post('observer', 'GameController@observer');
-Route::get('observer', 'GameController@observer');
+
+Route::get('game/active','GameController@getActiveGames');
+Route::post('game/active','GameController@postActiveGames');
+
 //Route::match(['get', 'post'], '/game/{bet}', 'GameController@bet');
 
 // Route::post('/game', 'GameController@bet');

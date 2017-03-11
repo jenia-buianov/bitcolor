@@ -38,4 +38,16 @@ class Bet extends Model
     public static function getMyBalance($userId){
         return DB::table('users')->select('balance')->where('id','=',$userId)->first()->balance;
     }
+
+    public static function unsetFinishedGames(){
+        $time = time()-(20*60);
+        DB::table('games')->where('timeStart','<', $time+1)
+            ->update(['isActive' => 0,'finished_at'=>date('Y-m-d H:m:s')]);
+    }
+
+    public static function listAllGames(){
+        return DB::table('games')->select("id", "timeStart as time", DB::raw("(SELECT COUNT(DISTINCT bets.userId) FROM `bets` WHERE bets.game_id=games.id) as players"), DB::raw("(SELECT SUM(bets.amount) FROM `bets` WHERE bets.game_id=games.id) as money"))->where([['isActive','=',1]])->get();
+
+    }
+
 }
