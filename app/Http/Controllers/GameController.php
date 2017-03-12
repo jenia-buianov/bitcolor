@@ -18,7 +18,7 @@ class GameController extends Controller
     private $getWithArray = array();
     private $postWithArray = array();
 
-    private function getWithArray($type){
+    private function getWithArray($type = null){
         if (empty($this->getWithArray)) {
             $this->getWithArray = array(
                 'listNotif' => Notifications::lastNotifications(Auth::user()->id),
@@ -37,7 +37,7 @@ class GameController extends Controller
         return $this->getWithArray;
     }
 
-    private function postWithArray($type){
+    private function postWithArray($type = null){
         if(empty($this->postWithArray)) {
             $this->postWithArray = array('timePerGame'=>($this->timePerGame*60));
             if ($type=='my') $this->postWithArray['games'] =  Bet::listMyActiveGames(Auth::user()->id);
@@ -181,16 +181,31 @@ class GameController extends Controller
         fclose($fp);
         $zip = new ZipArchive();
         $zip->open($zipFile.'.zip', ZIPARCHIVE::CREATE);
-        $zip->addFile($zipFile.'.txt');
         $zip->setPassword($zipPassword);
         $zip->close();
-        system('zip -p '.$zipPassword.' '.$zipFile.'.zip '.$zipFile.'.txt');
+        system('zip -P '.$zipPassword.' '.$zipFile.'.zip -j '.$zipFile.'.txt');
         copy($zipFile.'.zip',dirname(__FILE__).'/../../../public/results/'.$zipFile.'.zip');
         unlink($zipFile.'.txt');
         unlink($zipFile.'.zip');
-        $insertArray = array('win_sector'=>$selectedWinner,'zipfile'=>$zipFile,'zipPassword'=>$zipPassword);
+        $insertArray = array('win_sector'=>$selectedWinner,'zipfile'=>$zipFile,'zipPassword'=>$zipPassword,'timeStart'=>time());
         Bet::createGame($insertArray);
+    }
 
+    public function getViewGame(Request $request){
+        if(Auth::check()) {
+            $id = $request->id;
+            Bet::unsetFinishedGames();
+            $array = $this->getWithArray();
+            $array['game'] = Bet::loadGameInfo($id);
+            return view('game.view')
+                ->with($array);
+        }
+        else{return redirect('/');}
+
+    }
+
+    public function postViewGame(Request $request){
+        $id = $request->id;
     }
 
 }

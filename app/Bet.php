@@ -56,4 +56,8 @@ class Bet extends Model
     public static function createGame($array){
         DB::table('games')->insert($array);
     }
+
+    public static function loadGameInfo($id){
+        return DB::table('games')->select('win_sector', 'isActive', 'started_at', 'finished_at', 'zipfile', 'zipPassword')->where('id','=',$id)->get();
+    }
 }

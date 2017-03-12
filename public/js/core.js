@@ -58,6 +58,9 @@ $(document).ready(function() {
 			success: function(data){
 				$('#mainContent').html(data);
 				NProgress.done();
+				$.getScript( HOME_URL+"/js/links.js", function( data, textStatus, jqxhr ) {
+					console.log( "Links loaded" );
+				});
 			}
 		});
 
@@ -77,6 +80,9 @@ $(document).ready(function() {
 			success: function(data) {
 				NProgress.done();
 				$('#mainContent').html(data);
+				$.getScript( HOME_URL+"/js/links.js", function( data, textStatus, jqxhr ) {
+					console.log( "Links loaded" );
+				});
 			}
 		});
 	});
