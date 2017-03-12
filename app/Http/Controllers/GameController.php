@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use ZipArchive;
 use App\Http\Requests;
 use App\Bet;
 use App\Notifications;
@@ -75,17 +76,17 @@ class GameController extends Controller
         return redirect('/game');
     }
 //        dd($bets);
-        /*foreach ($bets as $bet){
-        echo($bet);
-        }*/
+    /*foreach ($bets as $bet){
+    echo($bet);
+    }*/
 
-                /*->with(['amount' => $amount,
-                        'email' => $email]);*/
+    /*->with(['amount' => $amount,
+            'email' => $email]);*/
     public function listBets(){
         if(Auth::check()) {
             Bet::unsetFinishedGames();
-        return view('game.colors')
-            ->with($this->getWithArray('all'));
+            return view('game.colors')
+                ->with($this->getWithArray('all'));
         }
         else{return redirect('/');}
     }
@@ -175,17 +176,20 @@ class GameController extends Controller
         $zipPassword = md5(md5(time()).$selectedWinner.rand(0,1000));
         $zipPassword = substr($zipPassword,0,100);
         $zipFile = 'game_'.time();
-        $fp = fopen(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.txt', "w");
+        $fp = fopen($zipFile.'.txt', "w");
         fwrite($fp, "Winner block: ".$selectedWinner);
         fclose($fp);
         $zip = new ZipArchive();
-        $zip->open(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.zip', ZIPARCHIVE::CREATE);
-        $zip->addFile(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.txt');
+        $zip->open($zipFile.'.zip', ZIPARCHIVE::CREATE);
+        $zip->addFile($zipFile.'.txt');
         $zip->setPassword($zipPassword);
         $zip->close();
-        unlink(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.txt');
+        system('zip -p '.$zipPassword.' '.$zipFile.'.zip '.$zipFile.'.txt');
+        copy($zipFile.'.zip',dirname(__FILE__).'/../../../public/results/'.$zipFile.'.zip');
+        unlink($zipFile.'.txt');
+        unlink($zipFile.'.zip');
         $insertArray = array('win_sector'=>$selectedWinner,'zipfile'=>$zipFile,'zipPassword'=>$zipPassword);
-        Bet::createGame();
+        Bet::createGame($insertArray);
 
     }
 
