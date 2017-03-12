@@ -47,3 +47,12 @@
     margin-top: -5px;
     font-size:0.6em;
 }
+@media(min-width:1024px) {
+    .notif_top, .notif_top li {
+        width: 250px!important;
+    }
+    .notif_top .unseen{
+        background-color: #ecf0f1;
+        color:#555555;
+    }
+}

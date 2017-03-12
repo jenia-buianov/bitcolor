@@ -30,6 +30,7 @@ Route::post('observer', 'GameController@observer');
 
 Route::get('game/active','GameController@getActiveGames');
 Route::post('game/active','GameController@postActiveGames');
+Route::post('notifications/seen','NotificationsController@seenNotification');
 
 //Route::match(['get', 'post'], '/game/{bet}', 'GameController@bet');
 

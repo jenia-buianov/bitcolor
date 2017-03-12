@@ -12,6 +12,38 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
+    private $timePerGame = 20;
+    private $getWithArray = array();
+    private $postWithArray = array();
+
+    private function getWithArray($type){
+        if (empty($this->getWithArray)) {
+            $this->getWithArray = array(
+                'listNotif' => Notifications::lastNotifications(Auth::user()->id),
+                'countNotif' => Notifications::countNotifications(Auth::user()->id),
+                'timePerGame' => ($this->timePerGame * 60),
+                'balance' => Bet::getMyBalance(Auth::user()->id),
+                'currGames' => Bet::getCurrentGames(),
+                'myActive' => Bet::getMyActiveGames(Auth::user()->id),
+                'myStatistic' => Bet::getStatistic(Auth::user()->id),
+                'myPlayedGames' => Bet::getMyPlayedGames(Auth::user()->id),
+                'top' => Bet::getPlaceInTop(Auth::user()->id));
+            if ($type=='my') $this->getWithArray['games'] =  Bet::listMyActiveGames(Auth::user()->id);
+            if ($type=='all') $this->getWithArray['games'] =  Bet::listAllGames(Auth::user()->id);
+
+        }
+        return $this->getWithArray;
+    }
+
+    private function postWithArray($type){
+        if(empty($this->postWithArray)) {
+            $this->postWithArray = array('timePerGame'=>($this->timePerGame*60));
+            if ($type=='my') $this->postWithArray['games'] =  Bet::listMyActiveGames(Auth::user()->id);
+            if ($type=='all') $this->postWithArray['games'] =  Bet::listAllGames(Auth::user()->id);
+        }
+        return $this->postWithArray;
+    }
+
     public function bet(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -52,23 +84,23 @@ class GameController extends Controller
         if(Auth::check()) {
             Bet::unsetFinishedGames();
         return view('game.colors')
-            ->with(['listNotif'=>Notifications::lastNotifications(Auth::user()->id),
-                'countNotif'=>Notifications::countNotifications(Auth::user()->id),
-                'timePerGame'=>(20*60),'games'=>Bet::listMyActiveGames(Auth::user()->id),
-                'balance'=>Bet::getMyBalance(Auth::user()->id),
-                'currGames'=> Bet::getCurrentGames(),
-                'myActive'=> Bet::getMyActiveGames(Auth::user()->id),
-                'myStatistic'=>Bet::getStatistic(Auth::user()->id),
-                'myPlayedGames'=>Bet::getMyPlayedGames(Auth::user()->id),
-                'top'=>Bet::getPlaceInTop(Auth::user()->id)]);
+            ->with($this->getWithArray('all'));
         }
         else{return redirect('/');}
+    }
+
+
+    public function listGames(Request $request){
+        if(Auth::check() and $request->isMethod('post') and (int)$request->input('modal')==1) {
+            Bet::unsetFinishedGames();
+            return view('game.game')->with($this->postWithArray('all'));
+        }
     }
 
     public function postActiveGames(Request $request){
         if(Auth::check() and $request->isMethod('post') and (int)$request->input('modal')==1) {
             Bet::unsetFinishedGames();
-            return view('game.game')->with(['games'=>Bet::listMyActiveGames(Auth::user()->id),'timePerGame'=>(20*60)]);
+            return view('game.game')->with($this->postWithArray('my'));
         }
     }
 
@@ -76,37 +108,32 @@ class GameController extends Controller
         if(Auth::check()) {
             Bet::unsetFinishedGames();
             return view('game.colors')
-                ->with(['listNotif'=>Notifications::lastNotifications(Auth::user()->id),
-                    'countNotif'=>Notifications::countNotifications(Auth::user()->id),
-                    'timePerGame'=>(20*60),'games'=>Bet::listMyActiveGames(Auth::user()->id),
-                    'balance'=>Bet::getMyBalance(Auth::user()->id),
-                    'currGames'=> Bet::getCurrentGames(),
-                    'myActive'=> Bet::getMyActiveGames(Auth::user()->id),
-                    'myStatistic'=>Bet::getStatistic(Auth::user()->id),
-                    'myPlayedGames'=>Bet::getMyPlayedGames(Auth::user()->id),
-                    'top'=>Bet::getPlaceInTop(Auth::user()->id)]);
+                ->with($this->getWithArray('my'));
         }
         else{return redirect('/');}
-    }
-
-    public function listGames(Request $request){
-        if(Auth::check() and $request->isMethod('post') and (int)$request->input('modal')==1) {
-            Bet::unsetFinishedGames();
-            return view('game.game')->with(['games'=>Bet::listAllGames(),'timePerGame'=>(20*60)]);
-        }
     }
 
     private function notificationObserver(){
         $text = "";
         foreach (Notifications::lastNotifications(Auth::user()->id) as $k=>$v){
-            $text.='<li><a href="';
+            $text.='<li';
+            if($v->seen==0) $text.=' class="unseen" onmouseover="notificationSeen('.$v->notificationId.')"';
+            $text.='><a href="';
             if ($v->modal==1) $text.=$v->link; else $text.='#';
-            $text.='">';
-            if ($v->textKey==1) $text.=translate($v->text);
-            elseif($v->lang==lang()) $text.=$v->text;
+            $text.='">';$text.=translate($v->titleKey);
             $text.="</a></li>\n";
         }
         return $text;
+    }
+
+    private function notifier(){
+        $array = array();
+        foreach (Notifications::unseenNotifications(Auth::user()->id) as $k=>$v){
+            if ($v->textKey==1) $text = translate($v->text); else $text = $v->text;
+            $array['not'.$v->notificationId] = array('type'=>'notification','notif'=>array('type'=>$v->type,'text'=>$text,'title'=>translate($v->titleKey),'icon'=>$v->icon));
+            Notifications::setShown($v->notificationId);
+        }
+        return $array;
     }
 
     public function observer(Request $request){
@@ -122,8 +149,10 @@ class GameController extends Controller
             $response['notif_count'] = array('type'=>'.','value'=>$countNotif,'action'=>'set','effect'=>'','equal'=>false,'css'=>$css);
             $response['notif_top'] = array('type'=>'.','value'=>$this->notificationObserver(),'action'=>'set','effect'=>'','equal'=>false);
 
-            //$response['notif_count'] = array('type'=>'.','value'=>1,'action'=>'set','effect'=>'','equal'=>false,'css'=>array('display'=>'-webkit-box'));
-           // $response['not'] = array('type'=>'notification','notif'=>array('type'=>'warning','text'=>'HERE is Text','title'=>'title','icon'=>'btc'));
+            foreach($this->notifier() as $k=>$v) {
+                $response[$k] = $v;
+            }
+            // $response['not'] = array('type'=>'notification','notif'=>array('type'=>'warning','text'=>'HERE is Text','title'=>'title','icon'=>'btc'));
             echo json_encode($response);
             exit;
         }

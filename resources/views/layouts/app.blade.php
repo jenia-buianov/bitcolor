@@ -85,10 +85,9 @@
                             <ul class="dropdown-menu notif_top" role="menu">
                                 <?php if (count($listNotif)>0){?>
                                     @foreach ($listNotif as $k=>$v)
-                                    <li><a href="@if($v->modal==1){{$v->link}}@else#@endif">@if($v->textKey==1){{translate($v->text)}}@elseif($v->lang==lang()) {{$v->text}} @endif</a></li>
+                                    <li @if($v->seen==0) class="unseen" onmouseover="notificationSeen({{$v->notificationId}})" @endif><a href="@if($v->modal==1){{$v->link}}@else#@endif">{{translate($v->titleKey)}}</a></li>
                                     @endforeach
                                 <?php }?>
-                                <li><a href="{{ url('/logout') }}" data-toggle="logout"><i class="fa fa-btn fa-sign-out"></i>{{translate('logout')}}</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -97,6 +96,7 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ url('/settings') }}"><i class="fa fa-btn fa-cogs"></i>{{translate('settings')}}</a></li>
                                 <li><a href="{{ url('/logout') }}" data-toggle="logout"><i class="fa fa-btn fa-sign-out"></i>{{translate('logout')}}</a></li>
                             </ul>
                         </li>

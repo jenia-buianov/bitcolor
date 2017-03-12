@@ -129,6 +129,18 @@ function setHTML(el,id){
 	}
 }
 
+function notificationSeen(id){
+	$.ajax({
+		dataType: "json",
+		url:     HOME_URL+'/notifications/seen',
+		data:     {modal:1,_token:$('#_token').val(),id:id},
+		method:     'POST',
+		success: function (data) {
+			return false;
+		}
+	});
+}
+
 function showNotification(el){
 
 	var count = parseInt($('body').html().split('class="notification"').length);
@@ -148,7 +160,7 @@ function showNotification(el){
 		setTimeout(function(){
 			$('.notification:eq(0)').remove();
 		},1000);
-	},4000);
+	},10000);
 }
 
 function myObserver(){

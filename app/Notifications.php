@@ -18,4 +18,16 @@ class Notifications extends Model
     public static function lastNotifications($userId){
         return DB::table('notifications')->select('*')->where([['userId','=',$userId]])->get();
     }
+
+    public static function seen($id){
+        return DB::table('notifications')->where([['notificationId','=',$id]])->update(['seen'=>1]);
+    }
+
+    public static function unseenNotifications($userId){
+        return DB::table('notifications')->select('*')->where([['userId','=',$userId],['seen','=',0],['shown','=',0]])->get();
+    }
+
+    public static function setShown($id){
+        return DB::table('notifications')->where([['notificationId','=',$id]])->update(['shown'=>1]);
+    }
 }
