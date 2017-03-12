@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Bet;
 use App\Notifications;
+use App\Http\Controllers\NotificationsController as Notif;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -157,6 +158,37 @@ class GameController extends Controller
             exit;
         }
     }
+
+    public function createGame(){
+        //if ($_SERVER['REMOTE_ADDR']!=='127.0.0.1') return;
+        $sectors = 8;
+        $selectedWinner = '';
+        $zipFile = '';
+        $zipPassword = '';
+        $winnersArray = array();
+        $winnersTitles = array('lucky','violet','orange','red','yellow','green','cyan','blue');
+
+        for($k=0;$k<rand(0,250);$k++){
+            $winnersArray[$k] = $winnersTitles[rand(0,$sectors-1)];
+        }
+        $selectedWinner = $winnersArray[rand(0,count($winnersArray)-1)];
+        $zipPassword = md5(md5(time()).$selectedWinner.rand(0,1000));
+        $zipPassword = substr($zipPassword,0,100);
+        $zipFile = 'game_'.time();
+        $fp = fopen(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.txt', "w");
+        fwrite($fp, "Winner block: ".$selectedWinner);
+        fclose($fp);
+        $zip = new ZipArchive();
+        $zip->open(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.zip', ZIPARCHIVE::CREATE);
+        $zip->addFile(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.txt');
+        $zip->setPassword($zipPassword);
+        $zip->close();
+        unlink(dirname(__FILE__).'/../../../public/results/'.$zipFile.'.txt');
+        $insertArray = array('win_sector'=>$selectedWinner,'zipfile'=>$zipFile,'zipPassword'=>$zipPassword);
+        Bet::createGame();
+
+    }
+
 }
 /* Route::post('/task', function (Request $request) {
        $validator = Validator::make($request->all(), [

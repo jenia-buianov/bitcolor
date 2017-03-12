@@ -30,4 +30,16 @@ class Notifications extends Model
     public static function setShown($id){
         return DB::table('notifications')->where([['notificationId','=',$id]])->update(['shown'=>1]);
     }
+
+    public static function addTranslation($text,$lang){
+        $key = 'notification_'.time();
+        DB::table('translations')->insert(['lang'=>$lang,'text'=>$text,'key'=>$key]);
+        return $key;
+    }
+
+    public static function addNotification($array){
+        DB::table('notifications')->insert($array);
+    }
+
+
 }
