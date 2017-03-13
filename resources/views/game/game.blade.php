@@ -30,7 +30,7 @@
                         <td><a href="{{url('/game/view/'.$v->id)}}" style="font-size:1.2em">Game #{{$v->id}}</a></td>
                         <td style="text-align: center">{{$v->players}} <i class="fa fa-users" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></td>
                         <td style="text-align: center"><font>{{$minutes}}:{{$seconds}} <script>setLeftGameTimer({{$v->id}},{{$time}});</script></font> <i class="fa fa-clock-o" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></td>
-                        <td style="text-align: right">{{(int)$v->money}} <i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;margin-left: 0.5em"></i></td>
+                        <td style="text-align: right">@if($v->money>0) {{$v->money}} @else 0 @endif <i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;margin-left: 0.5em"></i></td>
                     </tr>
                 @endforeach
             </tbody>

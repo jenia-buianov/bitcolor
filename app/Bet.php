@@ -22,7 +22,7 @@ class Bet extends Model
     }
 
     public static function getMyActiveGames($userId){
-        return DB::table('bets')->select(DB::raw("COUNT(DISTINCT `bets`.`game_id`) as total"))->leftJoin('games', 'games.id', '=', 'bets.game_id')->where([['games.isActive','=',1],['bets.userId','=',$userId]])->groupBy('bets.game_id')->first()->total;
+        return DB::table('bets')->select(DB::raw("COUNT(DISTINCT `bets`.`game_id`) as total"))->leftJoin('games', 'games.id', '=', 'bets.game_id')->where([['games.isActive','=',1],['bets.userId','=',$userId]])->first()->total;
 
     }
 
@@ -46,8 +46,8 @@ class Bet extends Model
         return DB::table('users')->select('balance')->where('id','=',$userId)->first()->balance;
     }
 
-    public static function unsetFinishedGames(){
-        $time = time()-(20*60);
+    public static function unsetFinishedGames($time){
+        $time = time()-($time*60);
         DB::table('games')->where('timeStart','<', $time+1)
             ->update(['isActive' => 0,'finished_at'=>date('Y-m-d H:m:s')]);
     }
@@ -66,7 +66,7 @@ class Bet extends Model
 
     public static function loadGameInfo($id,$userId){
         //DB::enableQueryLog();
-        return DB::table('games')->select('timeStart as time', 'win_sector', 'isActive', 'started_at', 'finished_at', 'zipfile', 'zipPassword','games.id',DB::raw("(SELECT `sector` FROM `bets` WHERE `bets`.`game_id`='".$id."' AND `bets`.`userId`='".$userId."' LIMIT 1) as color"),DB::raw("(SELECT SUM(`amount`) FROM `bets` WHERE `bets`.`game_id`=`games`.`id` AND `bets`.`userId`='".$userId."') as money"), DB::raw("(SELECT SUM(bets.amount) FROM `bets` WHERE bets.game_id=games.id) as bank"))->where('games.id','=',$id)->get();
+        return DB::table('games')->select(DB::raw("(SELECT COUNT(DISTINCT bets.userId) FROM `bets` WHERE bets.game_id=games.id) as players"), 'timeStart as time', 'win_sector', 'isActive', 'started_at', 'finished_at', 'zipfile', 'zipPassword','games.id',DB::raw("(SELECT `sector` FROM `bets` WHERE `bets`.`game_id`='".$id."' AND `bets`.`userId`='".$userId."' LIMIT 1) as color"),DB::raw("(SELECT SUM(`amount`) FROM `bets` WHERE `bets`.`game_id`=`games`.`id` AND `bets`.`userId`='".$userId."') as money"), DB::raw("(SELECT SUM(bets.amount) FROM `bets` WHERE bets.game_id=games.id) as bank"))->where('games.id','=',$id)->get();
         //print_r(DB::getQueryLog());
         //exit;
     }
@@ -85,6 +85,35 @@ class Bet extends Model
 
     public static function loadMoneyWithoutSector($sector,$id){
         return  DB::table('bets')->select(DB::raw('SUM(amount) as total'))->where([['game_id','=',$id],['sector','!=',$sector]])->first();
+    }
+
+    public static function loadUnsetGamesId($time){
+        $time = time()-($time*60);
+        return DB::table('games')->select('id')->where([['isActive','=',1],['timeStart','<',$time]])->get();
+    }
+
+    public static function getBankGame($id){
+        return DB::table('bets')->select(DB::raw("SUM(amount) as total"))->where('game_id','=',$id)->first();
+    }
+
+    public static function getWinnerSector($id){
+        return DB::table('games')->select('win_sector')->where('id','=',$id)->first()->win_sector;
+    }
+
+    public static function getWinnersId($id){
+        return DB::table('bets')->select(DB::raw('DISTINCT userId'), DB::raw("SUM(amount) as money"))->where('game_id','=',$id)->get();
+    }
+
+    public static function setWinners($id,$sector){
+        DB::table('bets')->where('game_id','=',$id)->where('sector','=',$sector)->update(['winner'=>1]);
+    }
+
+    public static function getWinnerBank($id){
+        return DB::table('bets')->select(DB::raw("SUM(amount) as total"))->where([['game_id','=',$id],['winner','=','1']])->first()->total;
+    }
+
+    public static function getUserLang($userId){
+        return DB::table('users')->select('lang')->where('id','=',$userId)->first()->lang;
     }
 
 }

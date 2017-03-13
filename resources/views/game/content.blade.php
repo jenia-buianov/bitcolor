@@ -7,9 +7,9 @@
     }
     Timeouts = [];
 </script>
-<div id="colors_" style="text-align: center;min-height:18em">
+<div id="colors_">
     @foreach($sectors as $k=>$v)
-    <div class="color" id="{{$v}}" @if($game['money']==0) onclick="selectColor(this)" @endif><font>
+    <div class="color" id="{{$v}}" @if($game['money']==0) onclick="selectColor(this)" @endif><div>
 
         <?php
             if (count($bets)>0){
@@ -34,7 +34,7 @@
             }
         ?>
             <i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;"></i>
-        </font>
+        </div>
     </div>
 @endforeach
 </div>
@@ -49,7 +49,8 @@
             $minutes = (int)($time/60);
             $seconds = (int)($time - ($minutes*60));
             echo'<div style="text-align: center;margin-top:1.5em;">Time left:</div>';
-            echo'<font style="font-size:1.5em;display:block;width:100%;text-align:center">'.$minutes.':'.$seconds.' <script>setLeftGameTimer('.$game['id'].','.$time.');</script></font>';
+            echo'<div style="font-size:1.5em;display:block;width:100%;text-align:center"><font>'.$minutes.':'.$seconds.' <script>setLeftGameTimer('.$game['id'].','.$time.');</script></font> <i class="fa fa-clock-o" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></div>';
+            echo'<div id="players" style="font-size:1em;display:block;width:100%;text-align:center">Players: '.(int)$game['players'].' <i class="fa fa-users" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></div>';
             if ($game['money']>0) {
                 echo'<div style="text-align: center;margin-top:1.5em;" id="my_amount">My amount: '.$game['money'].' <i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;"></i></div>';
                 echo'<div style="text-align: center;margin-top:1.5em;" id="my_color">Selected color: '.$game['color'].'</div>';
@@ -57,6 +58,8 @@
                 echo'<div style="text-align: center;margin-top:1.5em;display:none;" id="my_amount"></div>';
                 echo'<div style="text-align: center;margin-top:1.5em;display:none;" id="my_color"></div>';
             }
+            echo'<div style="font-size:1em;display:block;width:100%;text-align:center"><a href="'.url('/result/'.$game['zipfile'].'.zip').'" data-toggle="logout">Download archive with winner sector</a></div>';
+
 
     ?>
             <div style="margin-top:1.5em;">
@@ -75,6 +78,7 @@
         }
         else{
             echo '<div style="text-align: center">Game finished: '.mb_substr($game['finished_at'],0,16).'</div>';
+            echo '<div style="text-align: center">Win color: '.$game['win_sector'].'</div>';
         }
     ?>
 </div>

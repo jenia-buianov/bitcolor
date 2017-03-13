@@ -34,21 +34,25 @@ body{
 }
 .color {
     border-radius:100%;
-    height:4em;
-    width:4em;
+    height:6em;
+    width:6em;
     display:inline-block;
     color:white;
     font-size:1em;
     font-weight: 600;
-    line-height: 4em;
+    line-height: 6em;
 }
-.color font{
+.color div{
     display:none;
+}
+.color div i{
+    display:inline-flex;
 }
 .color:hover{
     cursor:pointer;
 }
-.color:hover font{
+.color:hover div{
+    width:auto;
     position: absolute;
     margin-top: 2em;
     padding: 0.5em;
@@ -58,16 +62,19 @@ body{
     line-height: 1em;
     z-index:1001;
     margin-left: 2em;
+    min-width: 10em;
 }
 
 #colors_{
-    margin-left: -2em;
+    margin-left: -6em;
+    text-align: center;
+    min-height: 26em;
 }
 
 .bank{
     font-size: 2em;
     position: absolute;
-    top: 4em;
+    top: 6em;
     text-align: center;
     display: block;
     width: 100%;
@@ -78,64 +85,75 @@ body{
 }
 
 @media(max-width:1024px) {
-    .color font {
-        display:inline-flex;
-        font-size:0.6em;
-        text-shadow: 4px 4px 2px rgba(150, 150, 150, 0.8);
+    .color div {
+        background: rgba(0,0,0,0.6);
+        display: inline-flex;
+        font-size: 0.6em;
+        width: auto;
+        line-height: initial;
+        padding: 1em;
+        border-radius: 0.5em;
+        position: relative;
+        z-index: 1002;
 
     }
-    .color font i{
+    .color div i{
         display: none;
     }
-    .color:hover font{
+    .color:hover div{
+        background: rgba(0,0,0,0.6);
+        display: inline-flex;
+        font-size: 0.6em;
+        width: auto;
+        line-height: initial;
+        padding: 1em;
+        border-radius: 0.5em;
         position: relative;
-        margin:0px;
-        padding:0px;
-        background: transparent;
+        z-index: 1002;
     }
 }
 
 #red{
     background-color: #ff6857;
-    margin-top:11.4em;
-    margin-left:-4em;
+    margin-top: 16.2em;
+    margin-left: -6em;
     position: absolute;
 }
 #orange{
     background-color: #FFB153;
     position: absolute;
-    margin-top:7.6em;
-    margin-left:-6em;
+    margin-top: 10em;
+    margin-left: -9em;
 }
 #yellow{
     background-color: #ffdf0e;
     position: absolute;
-    margin-top:13.5em;
-    margin-left:0px;
+    margin-top: 20em;
+    margin-left: 0px;
 }
 #green{
     background-color: #97CC1B;
     position: absolute;
-    margin-top:3.8em;
-    margin-left:4em;
+    margin-top: 3.8em;
+    margin-left: 6em;
 }
 #cyan{
     background-color: #1AD0FF;
     position: absolute;
-    margin-top:7.6em;
-    margin-left:6em;
+    margin-top: 10em;
+    margin-left: 9em;
 }
 #blue{
     background-color: #0080FF;
     position: absolute;
-    margin-top:11.4em;
-    margin-left:4em;
+    margin-top: 16.2em;
+    margin-left: 6em;
 }
 #violet{
     background-color: #8000FF;
     position: absolute;
-    margin-top:3.8em;
-    margin-left:-4em;
+    margin-top: 3.8em;
+    margin-left: -6em;
 }
 #lucky{
     background:url(/images/leprecon.jpg) no-repeat;

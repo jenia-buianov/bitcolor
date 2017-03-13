@@ -53,7 +53,7 @@ class GameController extends Controller
     }
 
     private function getWithArray($type = null){
-        Bet::unsetFinishedGames();
+        $this->unsetFinishedGames();
         if (empty($this->getWithArray)) {
             $this->getWithArray = array(
                 'listNotif' => Notifications::lastNotifications(Auth::user()->id),
@@ -133,9 +133,37 @@ class GameController extends Controller
         return $array;
     }
 
+    public function unsetFinishedGames(){
+
+        //$unsetIds = Bet::loadUnsetGamesId(20);
+        foreach(Bet::loadUnsetGamesId(20) as $k=>$v){
+            $bank = Bet::getBankGame($v->id);
+            if (count($bank)==1) {
+                $bank = $bank->total;
+                if(!empty($bank)) {
+                    Bet::setWinners($v->id,Bet::getWinnerSector($v->id));
+                    $winnerBank = Bet::getWinnerBank($v->id);
+                    $bank*=0.9;
+                    foreach (Bet::getWinnersId($v->id) as $item=>$value){
+                        $giveMoney = ($bank/$winnerBank)*$value->money;
+                        $setMoney = Bet::getMyBalance($value->userId)+$giveMoney;
+                        Bet::setMoney($giveMoney,$setMoney);
+                        $create = Notif::createNotification(array('type'=>'success','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> 'You won Game #'.$v->id.' +'.$giveMoney,'textKey'=>1,'titleKey'=>'win','icon'=>'trophy','translated'=>1));
+                        if(!is_bool($create)){
+                            print_r($create);
+                        }
+
+                    }
+                }
+            }
+        }
+        Bet::unsetFinishedGames(20);
+
+    }
+
     public function observer(Request $request){
         if(Auth::check()and $request->isMethod('post') and (int)$request->input('modal')==1) {
-            Bet::unsetFinishedGames();
+            $this->unsetFinishedGames();
             $response['currGames'] = array('type'=>'#','value'=>Bet::getCurrentGames(),'action'=>'set','effect'=>'','equal'=>false);
             $response['myActive'] = array('type'=>'#','value'=>Bet::getMyActiveGames(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
             $response['myStatistic'] = array('type'=>'#','value'=>Bet::getStatistic(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
@@ -151,12 +179,13 @@ class GameController extends Controller
                 $response[$k] = $v;
             }
             $page = explode('/',trim($request->input('page')));
-            if ($page[2]=='view' and isset($page[3])&&!empty($page[3]))
+            if (isset($page[2]) and $page[2]=='view' and isset($page[3])&&!empty($page[3]))
             {
                 $id = (int)$page[3];
                 $info = Bet::loadGameInfo($id,Auth::user()->id);
                 if ($info[0]->bank==0) $info[0]->bank = 0;
                 $response['bank'] = array('type'=>'#','value'=>$info[0]->bank.' <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i>','action'=>'set','effect'=>'bounceIn','equal'=>true);
+                $response['players'] = array('type'=>'#','value'=>'Players: '.$info[0]->players.' <i class="fa fa-users" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i>','action'=>'set','effect'=>'','equal'=>true);
                 $sectors = array('lucky','violet','orange','red','yellow','green','cyan','blue');
 
                 foreach(Bet::loadBets($id) as $k=>$v){

@@ -18,7 +18,7 @@ class NotificationsController extends Controller
         }
     }
 
-    public function createNotification($params){
+    public static function createNotification($params){
 
         $mustDeleted = array('lang','userId','text','textKey','type','titleKey','icon','translated');
         foreach($params as $k=>$v){
@@ -33,7 +33,7 @@ class NotificationsController extends Controller
         unset($params['translated']);
         if (count($mustDeleted)==0){
             Notifications::addNotification($params);
-        }
+        }else return $mustDeleted;
 
     }
 }
