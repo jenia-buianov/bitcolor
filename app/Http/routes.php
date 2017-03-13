@@ -34,6 +34,7 @@ Route::post('game/active','GameController@postActiveGames');
 Route::get('game/create','GameController@createGame');
 Route::get('game/view/{id}', 'GameController@getViewGame')->where('id', '[0-9]+');
 Route::post('game/view/{id}', 'GameController@postViewGame')->where('id', '[0-9]+');
+Route::post('game/bet','GameController@bet');
 
 Route::post('notifications/seen','NotificationsController@seenNotification');
 

@@ -18,7 +18,42 @@ class GameController extends Controller
     private $getWithArray = array();
     private $postWithArray = array();
 
+    public function bet(Request $request){
+        if(Auth::check() and $request->isMethod('post')) {
+            $page = explode('/',trim($request->input('page')));
+            $id = $page[3];
+            $date = array('html'=>'You have started playing this game', 'error'=>'');
+            $data = makeData(array('color','amount'),array('color'=>'sector'),$request->input('values'),$date,array('game_id'=>$id,'userId'=>Auth::user()->id));
+            if (!empty($date['error']))
+            {
+                echo json_encode($date);
+                retrun;
+            }
+            else{
+                $balance = Bet::getMyBalance(Auth::user()->id);
+                if ($data['amount']>$balance) $date['error'] = "Don't have enough money";
+
+                $info = Bet::loadGameInfo($id,Auth::user()->id);
+                $otherColors = Bet::loadMoneyWithoutSector($data['sector'],$id);
+                if ($info[0]->isActive==0) $date['error'] = "Game have finished yet";
+
+                if($info[0]->bank > 0 and $otherColors->total < ($data['amount'] + $info[0]->money)) $date['error'] = "You cannot put such a big amount";
+
+                if (!empty($date['error']))
+                {
+                    echo json_encode($date);
+                    return ;
+                }
+                Bet::setMoney($balance - $data['amount'],Auth::user()->id);
+                Bet::addBet($data);
+            }
+            echo json_encode($date);
+            return;
+        }
+    }
+
     private function getWithArray($type = null){
+        Bet::unsetFinishedGames();
         if (empty($this->getWithArray)) {
             $this->getWithArray = array(
                 'listNotif' => Notifications::lastNotifications(Auth::user()->id),
@@ -46,45 +81,8 @@ class GameController extends Controller
         return $this->postWithArray;
     }
 
-    public function bet(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|max:255',
-            'amount' => 'required|max:255',
-            'sector' => 'required|max:255',
-        ]);
-
-
-        if ($validator->fails()) {
-            return redirect('/game')
-                ->withInput()
-                ->withErrors($validator);
-
-        }
-//        dd($validator);
-        $bet = new Bet;
-        $amount = $request->amount;
-        $email = Auth::user()->email;
-        $sector = $request->sector;
-        $game_id = '1';
-
-        $bet->game_id = $game_id;
-        $bet->amount = $amount;
-        $bet->email = $email;
-        $bet->sector = $sector;
-        $bet->save();
-        return redirect('/game');
-    }
-//        dd($bets);
-    /*foreach ($bets as $bet){
-    echo($bet);
-    }*/
-
-    /*->with(['amount' => $amount,
-            'email' => $email]);*/
     public function listBets(){
         if(Auth::check()) {
-            Bet::unsetFinishedGames();
             return view('game.colors')
                 ->with($this->getWithArray('all'));
         }
@@ -94,21 +92,18 @@ class GameController extends Controller
 
     public function listGames(Request $request){
         if(Auth::check() and $request->isMethod('post') and (int)$request->input('modal')==1) {
-            Bet::unsetFinishedGames();
             return view('game.game')->with($this->postWithArray('all'));
         }
     }
 
     public function postActiveGames(Request $request){
         if(Auth::check() and $request->isMethod('post') and (int)$request->input('modal')==1) {
-            Bet::unsetFinishedGames();
             return view('game.game')->with($this->postWithArray('my'));
         }
     }
 
     public function getActiveGames(){
         if(Auth::check()) {
-            Bet::unsetFinishedGames();
             return view('game.colors')
                 ->with($this->getWithArray('my'));
         }
@@ -140,6 +135,7 @@ class GameController extends Controller
 
     public function observer(Request $request){
         if(Auth::check()and $request->isMethod('post') and (int)$request->input('modal')==1) {
+            Bet::unsetFinishedGames();
             $response['currGames'] = array('type'=>'#','value'=>Bet::getCurrentGames(),'action'=>'set','effect'=>'','equal'=>false);
             $response['myActive'] = array('type'=>'#','value'=>Bet::getMyActiveGames(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
             $response['myStatistic'] = array('type'=>'#','value'=>Bet::getStatistic(Auth::user()->id),'action'=>'set','effect'=>'','equal'=>false);
@@ -154,18 +150,44 @@ class GameController extends Controller
             foreach($this->notifier() as $k=>$v) {
                 $response[$k] = $v;
             }
-            // $response['not'] = array('type'=>'notification','notif'=>array('type'=>'warning','text'=>'HERE is Text','title'=>'title','icon'=>'btc'));
+            $page = explode('/',trim($request->input('page')));
+            if ($page[2]=='view' and isset($page[3])&&!empty($page[3]))
+            {
+                $id = (int)$page[3];
+                $info = Bet::loadGameInfo($id,Auth::user()->id);
+                if ($info[0]->bank==0) $info[0]->bank = 0;
+                $response['bank'] = array('type'=>'#','value'=>$info[0]->bank.' <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i>','action'=>'set','effect'=>'bounceIn','equal'=>true);
+                $sectors = array('lucky','violet','orange','red','yellow','green','cyan','blue');
+
+                foreach(Bet::loadBets($id) as $k=>$v){
+                    $response[$v->sector] = array('type'=>'#','value'=>'<font>'.$v->bank.' <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i></font>','action'=>'set','effect'=>'','equal'=>true);
+                    unset($sectors[array_search($v->sector,$sectors)]);
+                }
+                foreach($sectors as $i=>$v){
+                    $response[$v] = array('type'=>'#','value'=>'<font>0 <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i></font>','action'=>'set','effect'=>'','equal'=>true);
+                }
+                if ($info[0]->money > 0){
+                    $sectors = array('lucky','violet','orange','red','yellow','green','cyan','blue');
+                    for ($i=0;$i<count($sectors);$i++)
+                    $response[$sectors[$i]] = array('type'=>'#','action'=>'no_click');
+                    $response['my_amount'] = array('type'=>'#','value'=>'My amount: '.$info[0]->money.' <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i>','action'=>'set','effect'=>'bounceIn','equal'=>true,'css'=>array('display'=>'block'));
+                    $response['my_color'] = array('type'=>'#','value'=>'Selected color: '.$info[0]->color,'action'=>'set','effect'=>'bounceIn','equal'=>true,'css'=>array('display'=>'block'));
+
+                }
+
+            }
             echo json_encode($response);
             exit;
         }
     }
 
     public function createGame(){
-        //if ($_SERVER['REMOTE_ADDR']!=='127.0.0.1') return;
+        if ($_SERVER['REMOTE_ADDR']!=='127.0.0.1') return;
         $sectors = 8;
         $selectedWinner = '';
         $zipFile = '';
         $zipPassword = '';
+        $time = time();
         $winnersArray = array();
         $winnersTitles = array('lucky','violet','orange','red','yellow','green','cyan','blue');
 
@@ -173,11 +195,11 @@ class GameController extends Controller
             $winnersArray[$k] = $winnersTitles[rand(0,$sectors-1)];
         }
         $selectedWinner = $winnersArray[rand(0,count($winnersArray)-1)];
-        $zipPassword = md5(md5(time()).$selectedWinner.rand(0,1000));
+        $zipPassword = md5(md5($time).$selectedWinner.rand(0,1000));
         $zipPassword = substr($zipPassword,0,100);
-        $zipFile = 'game_'.time();
+        $zipFile = 'game_'.$time;
         $fp = fopen($zipFile.'.txt', "w");
-        fwrite($fp, "Winner block: ".$selectedWinner);
+        fwrite($fp, "Game created: ".date('d.m.Y H:i:s').",  Winner block: ".$selectedWinner);
         fclose($fp);
         $zip = new ZipArchive();
         $zip->open($zipFile.'.zip', ZIPARCHIVE::CREATE);
@@ -187,16 +209,20 @@ class GameController extends Controller
         copy($zipFile.'.zip',dirname(__FILE__).'/../../../public/results/'.$zipFile.'.zip');
         unlink($zipFile.'.txt');
         unlink($zipFile.'.zip');
-        $insertArray = array('win_sector'=>$selectedWinner,'zipfile'=>$zipFile,'zipPassword'=>$zipPassword,'timeStart'=>time());
+        $insertArray = array('win_sector'=>$selectedWinner,'zipfile'=>$zipFile,'zipPassword'=>$zipPassword,'timeStart'=>$time);
         Bet::createGame($insertArray);
     }
 
     public function getViewGame(Request $request){
         if(Auth::check()) {
             $id = $request->id;
-            Bet::unsetFinishedGames();
             $array = $this->getWithArray();
-            $array['game'] = Bet::loadGameInfo($id);
+            foreach(Bet::loadGameInfo($id,Auth::user()->id)[0] as $k=>$v){
+                $array['game'][$k] = $v;
+            }
+
+            $array['bets'] = Bet::loadBets($id);
+            $array['sectors'] = array('lucky','violet','orange','red','yellow','green','cyan','blue');
             return view('game.view')
                 ->with($array);
         }
@@ -205,24 +231,19 @@ class GameController extends Controller
     }
 
     public function postViewGame(Request $request){
-        $id = $request->id;
+        if(Auth::check()) {
+            $id = $request->id;
+            $array = $this->postWithArray();
+            foreach(Bet::loadGameInfo($id,Auth::user()->id)[0] as $k=>$v){
+                $array['game'][$k] = $v;
+            }
+
+            $array['bets'] = Bet::loadBets($id);
+            $array['sectors'] = array('lucky','violet','orange','red','yellow','green','cyan','blue');
+            return view('game.content')
+                ->with($array);
+        }
+        else{return redirect('/');}
     }
 
 }
-/* Route::post('/task', function (Request $request) {
-       $validator = Validator::make($request->all(), [
-           'name' => 'required|max:255',
-       ]);
-
-       if ($validator->fails()) {
-           return redirect('/')
-               ->withInput()
-               ->withErrors($validator);
-       }
-
-       $task = new Task;
-       $task->name = $request->name;
-       $task->save();
-
-       return redirect('/');
-   });*/

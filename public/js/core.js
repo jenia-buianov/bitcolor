@@ -12,27 +12,47 @@ function Send(el) {
 	});
 	if (alerts.length>0)
 	{
-		$('#'+formId+' #alerts').removeClass().addClass('bg-danger');
-		$('#'+formId+' #alerts').html(alerts.substr(2)+" not entered");
+		obj = {
+			notif : {
+				title:$('#'+formId).attr('title'),
+				type:'warning',
+				text:alerts.substr(2)+" not entered",
+				icon:'exclamation-circle'
+			}
+		};
+		showNotification(obj);
 		return false;
 	}
 	var url = $(el).attr('action');
     $.ajax({
 		dataType: "json",
 		url: url,
-		data: {values:valuesArray},
+		data: {values:valuesArray,_token:$('#_token').val(),page:window.location.pathname},
 		method: 'POST',
 		success: function (data) {
 			console.log(data);
-			console.log(formId);
 			if (data.error.length>0){
-				$('#'+formId+' #alerts').removeClass().addClass('bg-danger');
-				$('#'+formId+' #alerts').html(data.error);
+				obj = {
+					notif : {
+						title:$('#'+formId).attr('title'),
+						type:'warning',
+						text:data.error,
+						icon:'exclamation-circle'
+					}
+				};
+				showNotification(obj);
 				return false;
 			}
 			else {
-				$('#'+formId+' #alerts').removeClass().addClass('bg-success');
-				$('#'+formId+' #alerts').html(data.html);
+				obj = {
+					notif : {
+						title:$('#'+formId).attr('title'),
+						type:'success',
+						text:data.html,
+						icon:'check-circle-o '
+					}
+				};
+				showNotification(obj);
 				$('#'+formId)[0].reset();
 				return false;
 			}
@@ -147,6 +167,19 @@ function notificationSeen(id){
 	});
 }
 
+function selectColor(e){
+	$('#amountForm input[name="color"]').val($(e).attr('id'));
+	obj = {
+		notif : {
+			title:'Color selected',
+			type:'info',
+			text:"You select "+$(e).attr('id'),
+			icon:'exclamation-circle'
+		}
+	};
+	showNotification(obj);
+}
+
 function showNotification(el){
 
 	var count = parseInt($('body').html().split('class="notification"').length);
@@ -166,20 +199,37 @@ function showNotification(el){
 		setTimeout(function(){
 			$('.notification:eq(0)').remove();
 		},1000);
-	},10000);
+	},5000);
+}
+
+function setNoClickable(el){
+	$(el).off("click");
+	$(el).attr('onclick','');
+	$(el).on('click',function(){
+		obj = {
+			notif : {
+				title:'Error',
+				type:'warning',
+				text:"Sorry cannot change selected color",
+				icon:'exclamation-circle'
+			}
+		};
+		showNotification(obj);
+	});
 }
 
 function myObserver(){
 	$.ajax({
 		dataType: "json",
 		url:     HOME_URL+'/observer',
-		data:     {modal:1,_token:$('#_token').val()},
+		data:     {modal:1,_token:$('#_token').val(),page:window.location.pathname},
 		method:     'POST',
 		success: function (data) {
 			//console.log(data);
 			$.each(data, function(i, val) {
 				if (val.type=='#'||val.type=='.') {
 					if (val.action=='set') setHTML(val,i);
+					if (val.action=='no_click') setNoClickable(val.type+i);
 				}
 				if (val.type=='notification') showNotification(val);
 			});
