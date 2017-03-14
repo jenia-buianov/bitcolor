@@ -101,7 +101,11 @@ class Bet extends Model
     }
 
     public static function getWinnersId($id){
-        return DB::table('bets')->select(DB::raw('DISTINCT userId'), DB::raw("SUM(amount) as money"))->where('game_id','=',$id)->get();
+        return DB::table('bets')->select(DB::raw('DISTINCT userId'), DB::raw("SUM(amount) as money"))->where([['game_id','=',$id],['winner','=',1]])->get();
+    }
+
+    public static function getLosersId($id){
+        return DB::table('bets as b')->select(DB::raw('DISTINCT b.userId'))->where([['b.game_id','=',$id],['winner','=',0]])->get();
     }
 
     public static function setWinners($id,$sector){
@@ -114,6 +118,10 @@ class Bet extends Model
 
     public static function getUserLang($userId){
         return DB::table('users')->select('lang')->where('id','=',$userId)->first()->lang;
+    }
+
+    public static function getPlayers($id){
+        return DB::table('bets')->select(DB::raw("DISTINCT userId"))->where('game_id','=',$id)->count();
     }
 
 }

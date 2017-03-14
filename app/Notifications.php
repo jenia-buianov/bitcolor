@@ -32,7 +32,7 @@ class Notifications extends Model
     }
 
     public static function addTranslation($text,$lang){
-        $key = 'notification_'.time();
+        $key = 'notification_'.time().rand(0,255);
         DB::table('translations')->insert(['lang'=>$lang,'text'=>$text,'key'=>$key]);
         return $key;
     }

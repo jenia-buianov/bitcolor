@@ -22,7 +22,6 @@ Route::get('/', function () {
 
 
 Route::auth();
-//Route::get('/home', 'HomeController@index');
 
 Route::get('game','GameController@listBets');
 Route::post('game','GameController@listGames');
@@ -38,21 +37,6 @@ Route::post('game/view/{id}', 'GameController@postViewGame')->where('id', '[0-9]
 Route::post('game/bet','GameController@bet');
 
 Route::post('notifications/seen','NotificationsController@seenNotification');
-
-//Route::match(['get', 'post'], '/game/{bet}', 'GameController@bet');
-
-// Route::post('/game', 'GameController@bet');
-
-    /*$validator = Validator::make($request->all(), [
-        'players' => 'required|max:255',
-    ]);
-
-    if ($validator->fails()) {
-        return redirect('/')
-            ->withInput()
-            ->withErrors($validator);
-    }*/
-
 
 
 

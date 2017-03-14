@@ -58,7 +58,7 @@
                 echo'<div style="text-align: center;margin-top:1.5em;display:none;" id="my_amount"></div>';
                 echo'<div style="text-align: center;margin-top:1.5em;display:none;" id="my_color"></div>';
             }
-            echo'<div style="font-size:1em;display:block;width:100%;text-align:center"><a href="'.url('/result/'.$game['zipfile'].'.zip').'" data-toggle="logout">Download archive with winner sector</a></div>';
+            echo'<div style="font-size:1em;display:block;width:100%;text-align:center"><a href="'.url('/results/'.$game['zipfile'].'.zip').'" data-toggle="logout">Download archive with winner sector</a></div>';
 
 
     ?>

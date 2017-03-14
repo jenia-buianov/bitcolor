@@ -218,6 +218,18 @@ function setNoClickable(el){
 	});
 }
 
+
+function finishGames(){
+    $.ajax({
+        dataType: "data",
+        url:     HOME_URL+'/game/unset',
+        method:     'GET',
+        success: function (data) {
+            console.log(data);
+        }
+    });
+}
+
 function myObserver(){
 	$.ajax({
 		dataType: "json",
@@ -228,8 +240,12 @@ function myObserver(){
 			//console.log(data);
 			$.each(data, function(i, val) {
 				if (val.type=='#'||val.type=='.') {
-					if (val.action=='set') setHTML(val,i);
-					if (val.action=='no_click') setNoClickable(val.type+i);
+					if (val.action.a1=='set') setHTML(val,i);
+					if (val.action.a1=='no_click') setNoClickable(val.type+i);
+                    if (typeof val.action.a2 !== 'undefined'){
+                        if (val.action.a2=='set') setHTML(val,i);
+                        if (val.action.a2=='no_click') setNoClickable(val.type+i);
+                    }
 				}
 				if (val.type=='notification') showNotification(val);
 			});
@@ -242,4 +258,5 @@ $(document).ready(function (){
 	NProgress.done();
 	$('preloader').remove();
 	var myObs = setInterval(myObserver,1000);
+    var finishedGames = setInterval(finishGames,5000);
 });
