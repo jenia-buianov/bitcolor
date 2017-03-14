@@ -38,16 +38,30 @@
     </div>
 @endforeach
 </div>
-<div id="game_{{$game['id']}}" style="text-align: center;display: block; min-height: 10em;">
-    <div class="bank">
-        <span id="bank">@if($game['bank']>0){{$game['bank']}}@else 0 @endif <i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;"></i></span>
+@if($game['isActive']==0)
+    <div id="info">
+        <div class="bank">
+            <span id="bank">@if($game['bank']>0){{$game['bank']}}@else 0 @endif <i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;"></i></span>
+        </div>
+
+        <div id="players" style="font-size:1em;display:block;width:100%;text-align:center">Players: {{(int)$game['players']}} <i class="fa fa-users" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></div>
+        <div style="text-align: center">Game finished: {{mb_substr($game['finished_at'],0,16)}}</div>
+        <div style="text-align: center">Win color: {{$game['win_sector']}}</div>
+        @if($game['money']>0)<div style="text-align: center">Zip password: {{$game['zipPassword']}}</div>@endif
     </div>
+@endif
+<div id="game_{{$game['id']}}" style="text-align: center;display: block; min-height: 10em;margin-bottom:1.5em">
     <?php
 
         if ($game['isActive']==1){
             $time = ($game['time']+$timePerGame)-time();
             $minutes = (int)($time/60);
             $seconds = (int)($time - ($minutes*60));
+    echo'<div class="bank">
+        <span id="bank">';
+        if($game['bank']>0)echo $game['bank']; else echo '0';
+            echo'<i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;"></i></span>
+    </div>';
             echo'<div style="text-align: center;margin-top:1.5em;">Time left:</div>';
             echo'<div style="font-size:1.5em;display:block;width:100%;text-align:center"><font>'.$minutes.':'.$seconds.' <script>setLeftGameTimer('.$game['id'].','.$time.');</script></font> <i class="fa fa-clock-o" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></div>';
             echo'<div id="players" style="font-size:1em;display:block;width:100%;text-align:center">Players: '.(int)$game['players'].' <i class="fa fa-users" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></div>';
@@ -68,17 +82,13 @@
                         @if($game['money']>0) Add more: @else Amount: @endif
                     </label>
                     <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                        <input type="text" class="form-control" name="amount" placeholder="Amount" must="1" value="0.00001">
+                        <input type="text" class="form-control" name="amount" placeholder="Amount" must="1" value="0.001">
                     </div>
                     <input type="hidden" value="@if($game['money']>0){{$game['color']}}@endif" name="color" must="1" placeholder="Color">
                     <button type="submit" class="btn btn-success" style="margin-top:1em">Send</button>
                 </form>
             </div>
             <?
-        }
-        else{
-            echo '<div style="text-align: center">Game finished: '.mb_substr($game['finished_at'],0,16).'</div>';
-            echo '<div style="text-align: center">Win color: '.$game['win_sector'].'</div>';
         }
     ?>
 </div>

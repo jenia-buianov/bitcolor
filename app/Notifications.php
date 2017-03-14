@@ -16,7 +16,7 @@ class Notifications extends Model
     }
 
     public static function lastNotifications($userId){
-        return DB::table('notifications')->select('*')->where([['userId','=',$userId]])->get();
+        return DB::table('notifications')->select('*')->where([['userId','=',$userId]])->orderBy('notificationId', 'desc')->limit(10)->get();
     }
 
     public static function seen($id){

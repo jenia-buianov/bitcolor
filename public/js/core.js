@@ -230,6 +230,13 @@ function finishGames(){
     });
 }
 
+function updIsset(el,id){
+    if($(el.type+id).length>0) return ;
+    if (el.type=='#') type = 'id';
+    else type = 'class';
+    $(el.where).append('<div '+type+'="'+id+'">'+el.value+'</div>');
+}
+
 function myObserver(){
 	$.ajax({
 		dataType: "json",
@@ -242,6 +249,7 @@ function myObserver(){
 				if (val.type=='#'||val.type=='.') {
 					if (val.action.a1=='set') setHTML(val,i);
 					if (val.action.a1=='no_click') setNoClickable(val.type+i);
+					if (val.action.a1=='updIsset') updIsset(val,i);
                     if (typeof val.action.a2 !== 'undefined'){
                         if (val.action.a2=='set') setHTML(val,i);
                         if (val.action.a2=='no_click') setNoClickable(val.type+i);

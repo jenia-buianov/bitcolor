@@ -42,27 +42,24 @@ body{
     font-weight: 600;
     line-height: 6em;
 }
-.color div{
-    display:none;
-}
 .color div i{
     display:inline-flex;
+    padding-left:0.5em;
 }
 .color:hover{
     cursor:pointer;
 }
-.color:hover div{
-    width:auto;
-    position: absolute;
-    margin-top: 2em;
-    padding: 0.5em;
-    background: #2c3e50;
-    color:white;
-    display: block;
-    line-height: 1em;
-    z-index:1001;
-    margin-left: 2em;
-    min-width: 10em;
+.color div{
+    background: rgba(0,0,0,0.6);
+    display: inline-flex;
+    font-size: 0.6em;
+    width: auto;
+    line-height: initial;
+    padding: 1em;
+    border-radius: 0.5em;
+    position: relative;
+    z-index: 1002;
+    margin-top: auto;
 }
 #colors_{
     margin-left: -6em;
@@ -83,42 +80,9 @@ body{
     font-size:0.5em;
 }
 
-
-@media(min-width:1025px){
-    .color:hover div{
-        min-width: 10em;
-    }
-}
-
-@media(max-width:1024px) {
-    .color div {
-        background: rgba(0,0,0,0.6);
-        display: inline-flex;
-        font-size: 0.6em;
-        width: auto;
-        line-height: initial;
-        padding: 1em;
-        border-radius: 0.5em;
-        position: relative;
-        z-index: 1002;
-
-    }
-    .color div i{
-        display: none;
-    }
-    .color:hover div{
-        background: rgba(0,0,0,0.6);
-        display: inline-flex;
-        font-size: 0.6em;
-        width: auto;
-        line-height: initial;
-        padding: 1em;
-        border-radius: 0.5em;
-        position: relative;
-        z-index: 1002;
-        margin-top: auto;
-        margin-left: 2em;
-    }
+#info{
+    margin-top:1.5em;
+    margin-bottom:1.5em;
 }
 
 #red{

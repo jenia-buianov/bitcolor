@@ -124,4 +124,6 @@ class Bet extends Model
         return DB::table('bets')->select(DB::raw("DISTINCT userId"))->where('game_id','=',$id)->count();
     }
 
+
+
 }
