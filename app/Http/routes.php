@@ -31,6 +31,7 @@ Route::get('game/active','GameController@getActiveGames');
 Route::post('game/active','GameController@postActiveGames');
 
 Route::get('game/create','GameController@createGame');
+Route::get('top','GameController@cronTop');
 Route::get('game/unset','GameController@unsetFinishedGames');
 Route::get('game/view/{id}', 'GameController@getViewGame')->where('id', '[0-9]+');
 Route::post('game/view/{id}', 'GameController@postViewGame')->where('id', '[0-9]+');

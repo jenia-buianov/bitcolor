@@ -18,11 +18,20 @@ class GameController extends Controller
     private $getWithArray = array();
     private $postWithArray = array();
 
+
+    public function cronTop(){
+
+        if ($_SERVER['REMOTE_ADDR']!=='31.22.4.254' and  $_SERVER['REMOTE_ADDR']!=='31.22.4.41') return;
+        foreach(Bet::getAllUsersByStatistic() as $item=>$value){
+            Bet::seUserTop($value->userId,(int)$item+1);
+        }
+    }
+
     public function bet(Request $request){
         if(Auth::check() and $request->isMethod('post')) {
             $page = explode('/',trim($request->input('page')));
             $id = $page[3];
-            $date = array('html'=>'You have started playing this game', 'error'=>'');
+            $date = array('html'=>translate('start_playing'), 'error'=>'');
             $data = makeData(array('color','amount'),array('color'=>'sector'),$request->input('values'),$date,array('game_id'=>$id,'userId'=>Auth::user()->id));
             if (!empty($date['error']))
             {
@@ -31,14 +40,14 @@ class GameController extends Controller
             }
             else{
                 $balance = Bet::getMyBalance(Auth::user()->id);
-                if ($data['amount']>$balance) $date['error'] = "Don't have enough money";
+                if ($data['amount']>$balance) $date['error'] = translate('no_money');
 
                 $info = Bet::loadGameInfo($id,Auth::user()->id);
                 $otherColors = Bet::loadMoneyWithoutSector($data['sector'],$id);
-                if ($info[0]->isActive==0) $date['error'] = "Game have finished yet";
-                if(!empty($info[0]->color)and $data['sector']!==$info[0]->color) $data['error'] = "You cannot change color";
+                if ($info[0]->isActive==0) $date['error'] = translate('finished_game');
+                if(!empty($info[0]->color)and $data['sector']!==$info[0]->color) $data['error'] = translate('cannot_change_color');
 
-                if($info[0]->bank > 0 and $otherColors->total < ($data['amount'] + $info[0]->money)) $date['error'] = "You cannot put such a big amount";
+                if($info[0]->bank > 0 and $otherColors->total < ($data['amount'] + $info[0]->money)) $date['error'] = translate('big_amount');
 
                 if (!empty($date['error']))
                 {
@@ -159,8 +168,11 @@ class GameController extends Controller
                             foreach ($winners as $item=>$value){
                                 $giveMoney = number_format(($bank/$winnerBank)*$value->money, 8, '.', '');
                                 $setMoney = Bet::getMyBalance($value->userId)+$giveMoney;
+                                $success = Bet::getStatistic($value->userId);
+                                Bet::setSuccess($success,$value->userId);
+                                Bet::addTransfer(array('userId'=>$value->userId,'type'=>'+','price'=>$giveMoney));
                                 Bet::setMoney($setMoney,$value->userId);
-                                $create = Notif::createNotification(array('type'=>'success','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> 'Congratulations','textKey'=>1,'titleKey'=>'Won Game #'.$v->id.' +'.$giveMoney,'icon'=>'trophy','translated'=>0));
+                                $create = Notif::createNotification(array('type'=>'success','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('congratulations'),'textKey'=>1,'titleKey'=>translate('won_game').$v->id.' +'.$giveMoney,'icon'=>'trophy','translated'=>0));
                                 print_r($create.' '.$v->id.' '.$value->userId);
                                 if(!is_bool($create)){
                                     print_r($create);
@@ -169,7 +181,10 @@ class GameController extends Controller
                         }
                         if (count($losers)>0 and !empty($losers[0]->userId)) {
                             foreach ($losers as $item => $value) {
-                                $create = Notif::createNotification(array('type' => 'warning', 'lang' => Bet::getUserLang($value->userId), 'userId' => $value->userId, 'text' => "Don't worry. Try again", 'textKey' => 1, 'titleKey' => 'You lose Game #' . $v->id, 'icon' => 'trophy', 'translated' => 0));
+                                $success = Bet::getStatistic($value->userId);
+                                Bet::setSuccess($success,$value->userId);
+                                Bet::addTransfer(array('userId'=>$value->userId,'type'=>'-','price'=>$value->money));
+                                $create = Notif::createNotification(array('type' => 'warning', 'lang' => Bet::getUserLang($value->userId), 'userId' => $value->userId, 'text' => translate('dont_worry'), 'textKey' => 1, 'titleKey' => translate('lose_game') . $v->id, 'icon' => 'trophy', 'translated' => 0));
                                 print_r($create . ' ' . $v->id . ' ' . $value->userId);
                                 if (!is_bool($create)) {
                                     print_r($create);
@@ -181,7 +196,7 @@ class GameController extends Controller
                         if(count($winners)>0 and !empty($winners[0]->userId))
                             foreach ($winners as $item=>$value){
                                 Bet::setMoney($value->money,$value->userId);
-                                $create = Notif::createNotification(array('type'=>'info','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> 'Nobody won','textKey'=>1,'titleKey'=>'Equal Game #'.$v->id,'icon'=>'trophy','translated'=>0));
+                                $create = Notif::createNotification(array('type'=>'info','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('nobody'),'textKey'=>1,'titleKey'=>translate('equal').$v->id,'icon'=>'trophy','translated'=>0));
                                 print_r($create.' '.$v->id.' '.$value->userId);
                                 if(!is_bool($create)){
                                     print_r($create);
@@ -189,7 +204,7 @@ class GameController extends Controller
                             }
                         if(count($losers)>0 and !empty($losers[0]->userId))
                             foreach ($losers as $item => $value) {
-                                $create = Notif::createNotification(array('type' => 'info', 'lang' => Bet::getUserLang($value->userId), 'userId' => $value->userId, 'text' => 'Nobody won', 'textKey' => 1, 'titleKey' => 'Equal Game #' . $v->id, 'icon' => 'trophy', 'translated' => 0));
+                                $create = Notif::createNotification(array('type'=>'info','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('nobody'),'textKey'=>1,'titleKey'=>translate('equal').$v->id,'icon'=>'trophy','translated'=>0));
                                 print_r($create . ' ' . $v->id . ' ' . $value->userId);
                                 if (!is_bool($create)) {
                                     print_r($create);
@@ -243,18 +258,18 @@ class GameController extends Controller
                         $sectors = array('lucky', 'violet', 'orange', 'red', 'yellow', 'green', 'cyan', 'blue');
                         for ($i = 0; $i < count($sectors); $i++)
                             $response[$sectors[$i]]['action']['a2'] = 'no_click';
-                        $response['my_amount'] = array('type' => '#', 'value' => 'My amount: ' . $info[0]->money . ' <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i>', 'action' => array('a1' => 'set'), 'effect' => 'bounceIn', 'equal' => true, 'css' => array('display' => 'block'));
-                        $response['my_color'] = array('type' => '#', 'value' => 'Selected color: ' . $info[0]->color, 'action' => array('a1' => 'set'), 'effect' => 'bounceIn', 'equal' => true, 'css' => array('display' => 'block'));
+                        $response['my_amount'] = array('type' => '#', 'value' => translate('my_amount').': ' . $info[0]->money . ' <i class="fa fa-btc" aria-hidden="true" style="color:#FF9800"></i>', 'action' => array('a1' => 'set'), 'effect' => 'bounceIn', 'equal' => true, 'css' => array('display' => 'block'));
+                        $response['my_color'] = array('type' => '#', 'value' => translate('sel_color').': ' . $info[0]->color, 'action' => array('a1' => 'set'), 'effect' => 'bounceIn', 'equal' => true, 'css' => array('display' => 'block'));
 
                     }
                 }else{
                     $value='<div class="bank"><span id="bank">';
                     if($info[0]->bank>0)$value.=$info[0]->bank; else $value.='0';
                     $value.='<i class="fa fa-btc" aria-hidden="true" style="color:#ff9800;"></i></span>    </div>';
-                    $value.='<div id="players" style="font-size:1em;display:block;width:100%;text-align:center">Players: '.(int)$info[0]->players.' <i class="fa fa-users" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></div>
-                            <div style="text-align: center">Game finished: '.mb_substr($info[0]->finished_at,0,16).'</div>
-                            <div style="text-align: center">Win color: '.$info[0]->win_sector.'</div>';
-                    if($info[0]->money > 0)$value.='<div style="text-align: center">Zip password: '.$info[0]->zipPassword.'</div>';
+                    $value.='<div id="players" style="font-size:1em;display:block;width:100%;text-align:center">'.translate('players').': '.(int)$info[0]->players.' <i class="fa fa-users" aria-hidden="true" style="color:#cccccc;margin-left: 0.5em"></i></div>
+                            <div style="text-align: center">'.translate('game_fin').': '.mb_substr($info[0]->finished_at,0,16).'</div>
+                            <div style="text-align: center">'.translate('win_color').': '.$info[0]->win_sector.'</div>';
+                    if($info[0]->money > 0)$value.='<div style="text-align: center">'.translate('zip_pass').': '.$info[0]->zipPassword.'</div>';
                     $response['info'] = array('where'=>'#mainContent', 'type'=>'#','value'=>$value,'action'=>array('a1'=>'updIsset'),'effect'=>'bounceIn','equal'=>true);
                 }
 
@@ -282,7 +297,7 @@ class GameController extends Controller
         $zipPassword = substr($zipPassword,0,100);
         $zipFile = 'game_'.$time;
         $fp = fopen($zipFile.'.txt', "w");
-        fwrite($fp, "Game created: ".date('d.m.Y H:i:s').",  Winner block: ".$selectedWinner);
+        fwrite($fp, translate('game_created').": ".date('d.m.Y H:i:s').",  ".translate('win_color').": ".$selectedWinner);
         fclose($fp);
         $zip = new ZipArchive();
         $zip->open($zipFile.'.zip', ZIPARCHIVE::CREATE);

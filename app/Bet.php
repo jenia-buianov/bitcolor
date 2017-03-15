@@ -27,16 +27,19 @@ class Bet extends Model
     }
 
     public static function getMyPlayedGames($userId){
-        return DB::table('games')->leftJoin('bets', 'games.id', '=', 'bets.game_id')->where([['games.isActive','=',0],['bets.userId','=',$userId]])->groupBy('bets.game_id')->count();
+        return DB::table('games')->select(DB::raw('DISTINCT bets.game_id'))->leftJoin('bets', 'games.id', '=', 'bets.game_id')->where([['games.isActive','=',0],['bets.userId','=',$userId]])->count();
     }
     public static function getMyWonGames($userId){
-        return DB::table('games')->leftJoin('bets', 'games.id', '=', 'bets.game_id')->where([['games.isActive','=',0],['bets.userId','=',$userId],['bets.winner','=',1]])->groupBy('bets.game_id')->count();
+        //DB::enableQueryLog();
+        return DB::table('games')->select(DB::raw('DISTINCT bets.game_id'))->leftJoin('bets', 'games.id', '=', 'bets.game_id')->where([['games.isActive','=',0],['bets.userId','=',$userId],['bets.winner','=',1]])->count();
+        //print_r(DB::getQueryLog());
+        //exit;
     }
 
     public static function getStatistic($userId){
         $total = self::getMyPlayedGames($userId);
         $won = self::getMyWonGames($userId);
-        if ($won>0) return (100*($total/$won)).'%';
+        if ($won>0) return number_format((100*($won/$total)),2,'.','').'%';
         else return '0%';
     }
     public static function getPlaceInTop($userId){
@@ -105,7 +108,7 @@ class Bet extends Model
     }
 
     public static function getLosersId($id){
-        return DB::table('bets as b')->select(DB::raw('DISTINCT b.userId'))->where([['b.game_id','=',$id],['winner','=',0]])->get();
+        return DB::table('bets as b')->select(DB::raw('DISTINCT b.userId'), DB::raw("SUM(amount) as money"))->where([['b.game_id','=',$id],['winner','=',0]])->get();
     }
 
     public static function setWinners($id,$sector){
@@ -124,6 +127,19 @@ class Bet extends Model
         return DB::table('bets')->select(DB::raw("DISTINCT userId"))->where('game_id','=',$id)->count();
     }
 
+    public static function addTransfer($array){
+        DB::table('money_transfers')->insert($array);
+    }
 
+    public static function seUserTop($userId,$place){
+        DB::table('users')->where('id','=',$userId)->update(['top'=>$place]);
+    }
+
+    public static function setSuccess($success,$userId){
+        DB::table('users')->where('id','=',$userId)->update(['success'=>$success]);
+    }
+    public static function getAllUsersByStatistic(){
+        return DB::table('users')->select('id as userId')->orderBy('success','desc')->get();
+    }
 
 }
