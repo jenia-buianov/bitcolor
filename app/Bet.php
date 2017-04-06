@@ -104,11 +104,11 @@ class Bet extends Model
     }
 
     public static function getWinnersId($id){
-        return DB::table('bets')->select(DB::raw('DISTINCT userId'), DB::raw("SUM(amount) as money"))->where([['game_id','=',$id],['winner','=',1]])->get();
+        return DB::table('bets as b')->select(DB::raw('DISTINCT userId'), DB::raw("(SELECT SUM(`amount`) FROM `bets` as b2 WHERE `b`.`userId`=`b2`.`userId` AND `b2`.`game_id` = ".$id.")as money"))->where([['b.game_id','=',$id],['b.winner','=',1]])->get();
     }
 
     public static function getLosersId($id){
-        return DB::table('bets as b')->select(DB::raw('DISTINCT b.userId'), DB::raw("SUM(amount) as money"))->where([['b.game_id','=',$id],['winner','=',0]])->get();
+        return DB::table('bets as b')->select(DB::raw('DISTINCT b.userId'), DB::raw("(SELECT SUM(`amount`) FROM `bets` as b2 WHERE `b`.`userId`=`b2`.`userId` AND `b2`.`game_id` = ".$id.")as money"))->where([['b.game_id','=',$id],['b.winner','=',0]])->get();
     }
 
     public static function setWinners($id,$sector){
@@ -123,8 +123,12 @@ class Bet extends Model
         return DB::table('users')->select('lang')->where('id','=',$userId)->first()->lang;
     }
 
-    public static function getPlayers($id){
-        return DB::table('bets')->select(DB::raw("DISTINCT userId"))->where('game_id','=',$id)->count();
+    public static function getPlayers($id,$color){
+        return DB::table('bets')->select(DB::raw("DISTINCT `userId`"), DB::raw("COUNT(DISTINCT `userId`) as count"), DB::raw("(SELECT SUM(`amount`) FROM `bets` as `b` WHERE `b`.`game_id`='".$id."' AND `b`.`sector`!='".$color."') as mcolors"))->where('game_id','=',$id)->first();
+    }
+
+    public static function getMoneyInGame($game,$user){
+        return DB::table('bets')->select(DB::raw("(SELECT SUM(`amount`) FROM `bets` WHERE `game_id`='".$game."') as money"))->where('game_id','=',$game)->first()->money;
     }
 
     public static function addTransfer($array){
@@ -140,6 +144,11 @@ class Bet extends Model
     }
     public static function getAllUsersByStatistic(){
         return DB::table('users')->select('id as userId')->orderBy('success','desc')->get();
+    }
+
+    public static function loadUnsetGames($time){
+        $time = time()-($time*60);
+        return DB::table('games')->select('games.id','games.win_sector', DB::raw("(SELECT SUM(`bets`.`amount`) FROM `bets` WHERE `games`.`id`=`bets`.`game_id`) as `bank`"))->where([['games.isActive','=',1],['games.timeStart','<',$time]])->get();
     }
 
 }

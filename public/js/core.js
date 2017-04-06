@@ -16,7 +16,7 @@ function Send(el) {
 			notif : {
 				title:$('#'+formId).attr('title'),
 				type:'warning',
-				text:alerts.substr(2)+" not entered",
+				text:alerts.substr(2)+Lang.notEntered,
 				icon:'exclamation-circle'
 			}
 		};
@@ -70,7 +70,8 @@ $(document).ready(function() {
 			$('a.active').removeClass('active');
 			$(this).addClass('active');
 		}
-		NProgress.start();
+		//NProgress.start();
+		preloader();
 		$.ajax({
 			url:     url,
 			data:     {modal:1,_token:$('#_token').val()},
@@ -79,6 +80,7 @@ $(document).ready(function() {
 				$('#mainContent').html(data);
 				NProgress.done();
 				$.getScript( HOME_URL+"/js/links.js", function( data, textStatus, jqxhr ) {
+					$('preloader').remove();
 					console.log( "Links loaded" );
 				});
 			}
@@ -92,7 +94,7 @@ $(document).ready(function() {
 	});
 
 	$(window).bind('popstate', function() {
-		NProgress.start();
+		//NProgress.start();
 		$.ajax({
 			url:     location.pathname,
 			data:     {modal:1,_token:$('#_token').val()},
@@ -173,7 +175,7 @@ function selectColor(e){
 		notif : {
 			title:'Color selected',
 			type:'info',
-			text:"You select "+$(e).attr('id'),
+			text:Lang.select+$(e).attr('id'),
 			icon:'exclamation-circle'
 		}
 	};
@@ -210,7 +212,7 @@ function setNoClickable(el){
 			notif : {
 				title:'Error',
 				type:'warning',
-				text:"Sorry cannot change selected color",
+				text:Lang.noChangeColor,
 				icon:'exclamation-circle'
 			}
 		};
@@ -263,8 +265,10 @@ function myObserver(){
 }
 
 $(document).ready(function (){
+	finishGames();
 	NProgress.done();
-	$('preloader').remove();
+	//$('preloader').remove();
+	//console.log('HERE');
 	var myObs = setInterval(myObserver,1000);
     var finishedGames = setInterval(finishGames,5000);
 });

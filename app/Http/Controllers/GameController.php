@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
-    private $timePerGame = 20;
+    private $timePerGame = 10;
     private $getWithArray = array();
     private $postWithArray = array();
 
@@ -73,7 +73,8 @@ class GameController extends Controller
                 'myActive' => Bet::getMyActiveGames(Auth::user()->id),
                 'myStatistic' => Bet::getStatistic(Auth::user()->id),
                 'myPlayedGames' => Bet::getMyPlayedGames(Auth::user()->id),
-                'top' => Bet::getPlaceInTop(Auth::user()->id));
+                'top' => Bet::getPlaceInTop(Auth::user()->id),
+                'lang' => lang());
             if ($type=='my') $this->getWithArray['games'] =  Bet::listMyActiveGames(Auth::user()->id);
             if ($type=='all') $this->getWithArray['games'] =  Bet::listAllGames(Auth::user()->id);
 
@@ -142,82 +143,152 @@ class GameController extends Controller
         return $array;
     }
 
-    public function unsetFinishedGames(){
+//    public function unsetFinishedGames(){
+//        $start = microtime(true);
+//        //if ($_SERVER['REMOTE_ADDR']!=='31.22.4.254' and  $_SERVER['REMOTE_ADDR']!=='31.22.4.41') return;
+//        //while(microtime(true) - $start<50){
+//            $unset = Bet::loadUnsetGamesId($this->timePerGame);
+//            Bet::unsetFinishedGames($this->timePerGame);
+//            foreach($unset as $k=>$v){
+//                $bank = Bet::getBankGame($v->id);
+//                if (count($bank)==1) {
+//                    $bank = $bank->total;
+//                    //print_r($bank);
+//                    if(!empty($bank)) {
+//
+//                        $winSector = Bet::getWinnerSector($v->id);
+//                        $players = Bet::getPlayers($v->id);
+//                        Bet::setWinners($v->id,$winSector);
+//                        $winners = Bet::getWinnersId($v->id);
+//                        $losers = Bet::getLosersId($v->id);
+//                        $otherColors = Bet::loadMoneyWithoutSector($winSector,$v->id);
+//                        echo 'Players: '.$players.'<br>Losers:<br>';
+//                        print_r(Bet::getLosersId($v->id));
+//                        echo '<br>Winners: <br>';
+//                        print_r($winners);
+//                        if($players>1 and count($otherColors)>0 and isset($otherColors->total) and !empty($otherColors->total))
+//                        {
+//                            $winnerBank = Bet::getWinnerBank($v->id);
+//                            $bank*=0.98;
+//
+//                            if(count($winners)>0 and !empty($winners[0]->userId)){
+//                                foreach ($winners as $item=>$value){
+//                                    echo '<br>Winner: '.(int)($item+1).' = '.$value->userId.'<br>';
+//                                    $giveMoney = number_format(($bank/$winnerBank)*$value->money, 8, '.', '');
+//                                    $setMoney = Bet::getMyBalance($value->userId)+$giveMoney;
+//                                    $success = Bet::getStatistic($value->userId);
+//                                    Bet::setSuccess($success,$value->userId);
+//                                    Bet::addTransfer(array('userId'=>$value->userId,'type'=>'+','price'=>$giveMoney,'game_id'=>$v->id));
+//                                    Bet::setMoney($setMoney,$value->userId);
+//                                    $create = Notif::createNotification(array('type'=>'success','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('congratulations'),'textKey'=>1,'titleKey'=>translate('won_game').$v->id.' +'.$giveMoney,'icon'=>'trophy','translated'=>0));
+//                                    print_r($create.' '.$v->id.' '.$value->userId);
+//                                    if(!is_bool($create)){
+//                                        print_r($create);
+//                                    }
+//                                }
+//                            }
+//                            if (count($losers)>0 and !empty($losers[0]->userId)) {
+//                                foreach ($losers as $item => $value) {
+//                                    echo '<br>Loser: '.(int)($item+1).' = '.$value->userId.'<br>';
+//                                    $success = Bet::getStatistic($value->userId);
+//                                    Bet::setSuccess($success,$value->userId);
+//                                    Bet::addTransfer(array('userId'=>$value->userId,'type'=>'-','price'=>$value->money));
+//                                    $create = Notif::createNotification(array('type' => 'warning', 'lang' => Bet::getUserLang($value->userId), 'userId' => $value->userId, 'text' => translate('dont_worry'), 'textKey' => 1, 'titleKey' => translate('lose_game') . $v->id, 'icon' => 'trophy', 'translated' => 0));
+//                                    print_r($create . ' ' . $v->id . ' ' . $value->userId);
+//                                    if (!is_bool($create)) {
+//                                        print_r($create);
+//                                    }
+//                                }
+//                            }
+//
+//                        }else{
+//                            if(count($winners)>0 and !empty($winners[0]->userId))
+//                                foreach ($winners as $item=>$value){
+//                                    Bet::setMoney($value->money,$value->userId);
+//                                    $create = Notif::createNotification(array('type'=>'info','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('nobody'),'textKey'=>1,'titleKey'=>translate('equal').$v->id,'icon'=>'trophy','translated'=>0));
+//                                    print_r($create.' '.$v->id.' '.$value->userId);
+//                                    if(!is_bool($create)){
+//                                        print_r($create);
+//                                    }
+//                                }
+//                            if(count($losers)>0 and !empty($losers[0]->userId))
+//                                foreach ($losers as $item => $value) {
+//                                    $create = Notif::createNotification(array('type'=>'info','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('nobody'),'textKey'=>1,'titleKey'=>translate('equal').$v->id,'icon'=>'trophy','translated'=>0));
+//                                    print_r($create . ' ' . $v->id . ' ' . $value->userId);
+//                                    if (!is_bool($create)) {
+//                                        print_r($create);
+//                                    }
+//                                }
+//                        }
+//                    }
+//                }
+//            }
+//            //sleep(9);
+//
+//        echo '<br>';
+//        print(microtime(true) - $start);
+//    }
 
-        //if ($_SERVER['REMOTE_ADDR']!=='31.22.4.254' and  $_SERVER['REMOTE_ADDR']!=='31.22.4.41') return;
-        $unset = Bet::loadUnsetGamesId($this->timePerGame);
-        Bet::unsetFinishedGames($this->timePerGame);
-        foreach($unset as $k=>$v){
-            $bank = Bet::getBankGame($v->id);
-            if (count($bank)==1) {
-                $bank = $bank->total;
-                //print_r($bank);
-                if(!empty($bank)) {
-                    $winSector = Bet::getWinnerSector($v->id);
-                    $players = Bet::getPlayers($v->id);
-                    Bet::setWinners($v->id,$winSector);
-                    $winners = Bet::getWinnersId($v->id);
-                    $losers = Bet::getLosersId($v->id);
-                    $otherColors = Bet::loadMoneyWithoutSector($winSector,$v->id);
-                    if($players>1 and count($otherColors)>0 and isset($otherColors->total) and !empty($otherColors->total))
-                    {
-                        $winnerBank = Bet::getWinnerBank($v->id);
-                        $bank*=0.98;
 
-                        if(count($winners)>0 and !empty($winners[0]->userId)){
-                            foreach ($winners as $item=>$value){
-                                $giveMoney = number_format(($bank/$winnerBank)*$value->money, 8, '.', '');
-                                $setMoney = Bet::getMyBalance($value->userId)+$giveMoney;
-                                $success = Bet::getStatistic($value->userId);
-                                Bet::setSuccess($success,$value->userId);
-                                Bet::addTransfer(array('userId'=>$value->userId,'type'=>'+','price'=>$giveMoney));
-                                Bet::setMoney($setMoney,$value->userId);
-                                $create = Notif::createNotification(array('type'=>'success','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('congratulations'),'textKey'=>1,'titleKey'=>translate('won_game').$v->id.' +'.$giveMoney,'icon'=>'trophy','translated'=>0));
-                                print_r($create.' '.$v->id.' '.$value->userId);
-                                if(!is_bool($create)){
-                                    print_r($create);
-                                }
+    public function unsetFinishedGames()
+    {
+        $start = microtime(true);
+//        //if ($_SERVER['REMOTE_ADDR']!=='31.22.4.254' and  $_SERVER['REMOTE_ADDR']!=='31.22.4.41') return;
+//        //while(microtime(true) - $start<50){
+        //while(microtime(true) - $start<60) {
+            $unset = Bet::loadUnsetGames($this->timePerGame);
+            foreach ($unset as $item => $value) {
+                if ((float)$value->bank > 0) {
+                    $players = Bet::getPlayers($value->id, $value->win_sector);
+                    //file_put_contents(dirname(__FILE__).'/../../../public/1.txt', print_r($players, true));
+
+                    if ($players->count > 1) {
+                        Bet::setWinners($value->id, $value->win_sector);
+
+                        $winnerBank = Bet::getWinnerBank($value->id);
+                        $bank = $value->bank * 0.98;
+
+                        $winners = Bet::getWinnersId($value->id);
+                        print_r($winners);
+                        if (count($winners) > 0 and !empty($winners[0]->userId)) {
+                            foreach ($winners as $i => $v) {
+                                $giveMoney = number_format(($bank / $winnerBank) * $v->money, 8, '.', '');
+                                $setMoney = Bet::getMyBalance($v->userId) + $giveMoney;
+                                $success = Bet::getStatistic($v->userId);
+                                Bet::setMoney($setMoney, $v->userId);
+                                Bet::setSuccess($success, $v->userId);
+                                Bet::addTransfer(array('userId' => $v->userId, 'type' => '+', 'price' => $giveMoney, 'game_id' => $value->id));
+                                Bet::setMoney($setMoney, $v->userId);
+                                $create = Notif::createNotification(array('type'=>'success','lang'=>Bet::getUserLang($v->userId),'userId'=>$v->userId,'text'=> translate('congratulations'),'textKey'=>1,'titleKey'=>translate('won_game').$value->id.' +'.$giveMoney,'icon'=>'trophy','translated'=>0));
+//                                print_r('WInner '.$create);
+
                             }
                         }
-                        if (count($losers)>0 and !empty($losers[0]->userId)) {
-                            foreach ($losers as $item => $value) {
-                                $success = Bet::getStatistic($value->userId);
-                                Bet::setSuccess($success,$value->userId);
-                                Bet::addTransfer(array('userId'=>$value->userId,'type'=>'-','price'=>$value->money));
-                                $create = Notif::createNotification(array('type' => 'warning', 'lang' => Bet::getUserLang($value->userId), 'userId' => $value->userId, 'text' => translate('dont_worry'), 'textKey' => 1, 'titleKey' => translate('lose_game') . $v->id, 'icon' => 'trophy', 'translated' => 0));
-                                print_r($create . ' ' . $v->id . ' ' . $value->userId);
-                                if (!is_bool($create)) {
-                                    print_r($create);
-                                }
+
+                        $losers = Bet::getLosersId($value->id);
+                        if (count($losers) > 0 and !empty($losers[0]->userId)) {
+                            foreach ($losers as $i => $v) {
+                                $success = Bet::getStatistic($v->userId);
+                                Bet::setSuccess($success, $v->userId);
+                                Bet::addTransfer(array('userId' => $v->userId, 'type' => '-', 'price' => $v->money, 'game_id' => $value->id));
+                                $create = Notif::createNotification(array('type' => 'warning', 'lang' => Bet::getUserLang($v->userId), 'userId' => $v->userId, 'text' => translate('dont_worry'), 'textKey' => 1, 'titleKey' => translate('lose_game') . $value->id, 'icon' => 'trophy', 'translated' => 0));
+                                //print_r('Loser '.$create);
                             }
                         }
+                    } else {
+                            $money = Bet::getMoneyInGame($value->id,$players->userId);
+                            Bet::setMoney(Bet::getMyBalance($players->userId) + $money, $players->userId);
+                            $create = Notif::createNotification(array('type' => 'info', 'lang' => Bet::getUserLang($players->userId), 'userId' => $players->userId, 'text' => translate('nobody'), 'textKey' => 1, 'titleKey' => translate('equal') . $value->id, 'icon' => 'trophy', 'translated' => 0));
 
-                    }else{
-                        if(count($winners)>0 and !empty($winners[0]->userId))
-                            foreach ($winners as $item=>$value){
-                                Bet::setMoney($value->money,$value->userId);
-                                $create = Notif::createNotification(array('type'=>'info','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('nobody'),'textKey'=>1,'titleKey'=>translate('equal').$v->id,'icon'=>'trophy','translated'=>0));
-                                print_r($create.' '.$v->id.' '.$value->userId);
-                                if(!is_bool($create)){
-                                    print_r($create);
-                                }
-                            }
-                        if(count($losers)>0 and !empty($losers[0]->userId))
-                            foreach ($losers as $item => $value) {
-                                $create = Notif::createNotification(array('type'=>'info','lang'=>Bet::getUserLang($value->userId),'userId'=>$value->userId,'text'=> translate('nobody'),'textKey'=>1,'titleKey'=>translate('equal').$v->id,'icon'=>'trophy','translated'=>0));
-                                print_r($create . ' ' . $v->id . ' ' . $value->userId);
-                                if (!is_bool($create)) {
-                                    print_r($create);
-                                }
-                            }
+
                     }
 
                 }
             }
-        }
-
+            Bet::unsetFinishedGames($this->timePerGame);
+            //sleep(9);
+     //   }
     }
-
     public function observer(Request $request){
         if(Auth::check()and $request->isMethod('post') and (int)$request->input('modal')==1) {
             //$this->unsetFinishedGames();

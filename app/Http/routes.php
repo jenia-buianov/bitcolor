@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
    if(Auth::user()) return redirect('game');
-    else return view('welcome');
+    else return view('welcome')->with(['lang'=>lang()]);
 });
 
 
@@ -33,6 +33,11 @@ Route::post('game/active','GameController@postActiveGames');
 Route::get('game/create','GameController@createGame');
 Route::get('top','GameController@cronTop');
 Route::get('game/unset','GameController@unsetFinishedGames');
+Route::get('game/unset2','GameController@unsetFinishedGames');
+Route::get('game/unset3','GameController@unsetFinishedGames');
+Route::get('game/unset4','GameController@unsetFinishedGames');
+Route::get('game/unset5','GameController@unsetFinishedGames');
+Route::get('game/unset6','GameController@unsetFinishedGames');
 Route::get('game/view/{id}', 'GameController@getViewGame')->where('id', '[0-9]+');
 Route::post('game/view/{id}', 'GameController@postViewGame')->where('id', '[0-9]+');
 Route::post('game/bet','GameController@bet');

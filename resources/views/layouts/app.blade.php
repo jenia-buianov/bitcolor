@@ -1,5 +1,6 @@
+<?php $link = 'js/languages/'.$lang.'.js'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $lang }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -25,6 +26,7 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
     <script src="{{asset('js/nprogress.js')}}"></script>
+    <script src="{{asset($link)}}"></script>
     <script src="{{asset('js/core.js')}}"></script>
 
     <style>

@@ -6,7 +6,7 @@ $(document).ready(function() {
 			$('a.active').removeClass('active');
 			$(this).addClass('active');
 		}
-		NProgress.start();
+		preloader();
 		$.ajax({
 			url:     url,
 			data:     {modal:1,_token:$('#_token').val()},
@@ -14,8 +14,8 @@ $(document).ready(function() {
 			success: function(data){
 				$('#mainContent').html(data);
 				NProgress.done();
-
 				$.getScript( HOME_URL+"/js/links.js", function( data, textStatus, jqxhr ) {
+					$('preloader').remove();
 					console.log( "Links loaded" );
 				});
 			}
